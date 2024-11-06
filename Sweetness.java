@@ -4,7 +4,7 @@ public class Sweetness {
     private String SweetNessName;
 
     // Constructor
-    public Sweetness(int SweetnessID ,String SweetNessName) {
+    public Sweetness(int SweetnessID, String SweetNessName) {
         this.SweetnessID = SweetnessID;
         this.SweetNessName = SweetNessName;
     }
@@ -14,7 +14,7 @@ public class Sweetness {
     }
 
     public void setSweetnessID(int SweetnessID) {
-        this.SweetnessID= SweetnessID;
+        this.SweetnessID = SweetnessID;
     }
 
     // Method ดึงระดับความหวาน

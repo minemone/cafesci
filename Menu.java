@@ -2,7 +2,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Menu {
     // Fields
     // private List<Menu> menuItems;
@@ -11,7 +10,6 @@ public class Menu {
     private List<Sweetness> sweetnessLevels;
     // private List<DrinkType> drinktypes;
     private List<PreparationType> PreparationTypes;
-    
 
     // Constructor
     public Menu() {
@@ -21,7 +19,6 @@ public class Menu {
         this.toppings = new ArrayList<>();
         this.sweetnessLevels = new ArrayList<>();
     }
-    
 
     public void displayMenudrink() {
         System.out.println("\n===== Menu =====\n");
@@ -31,30 +28,29 @@ public class Menu {
         }
     }
 
-        public void displayMenutopping() {
-              System.out.println("\n-- Toppings --");
+    public void displayMenutopping() {
+        System.out.println("\n-- Toppings --");
         for (Topping topping : toppings) {
-            System.out.printf("%d. %s \n",topping.getToppingID(), topping.getToppingName());
+            System.out.printf("%d. %s \n", topping.getToppingID(), topping.getToppingName());
         }
     }
-        public void displayMenusweetness() {
-            System.out.println("\n-- Sweetness Levels --");
-            for (Sweetness sweetness : sweetnessLevels) {
-                System.out.printf("%d. %s  \n",sweetness.getSweetnessID(), sweetness.getSweetnessName());
-            }
-        }
 
-        public void displayPreparationType() {
-            System.out.println("\n-- PreparationType  --");
-            for (PreparationType PreparationType : PreparationTypes) {
-                System.out.printf("%d. %s - $%.2f\n",PreparationType.getPrepID(), PreparationType.getPrepName(),PreparationType.getPrepprice());
-         }
+    public void displayMenusweetness() {
+        System.out.println("\n-- Sweetness Levels --");
+        for (Sweetness sweetness : sweetnessLevels) {
+            System.out.printf("%d. %s  \n", sweetness.getSweetnessID(), sweetness.getSweetnessName());
+        }
+    }
+
+    public void displayPreparationType() {
+        System.out.println("\n-- PreparationType  --");
+        for (PreparationType PreparationType : PreparationTypes) {
+            System.out.printf("%d. %s - $%.2f\n", PreparationType.getPrepID(), PreparationType.getPrepName(),
+                    PreparationType.getPrepprice());
+        }
 
         System.out.println("=======================\n");
     }
-    
-
-    
 
     public Drink getDrink(int drinkID) {
         for (Drink drink : drinks) {
@@ -78,7 +74,7 @@ public class Menu {
 
     public Sweetness getSweetness(int sweetnessLevelID) {
         for (Sweetness sweetness : sweetnessLevels) {
-            if (sweetness.getSweetnessID()== sweetnessLevelID) {
+            if (sweetness.getSweetnessID() == sweetnessLevelID) {
                 return sweetness;
             }
         }
@@ -88,7 +84,7 @@ public class Menu {
 
     public PreparationType getPreparationType(int PrepID) {
         for (PreparationType PreparationType : PreparationTypes) {
-            if (PreparationType.getPrepID()== PrepID) {
+            if (PreparationType.getPrepID() == PrepID) {
                 return PreparationType;
             }
         }
@@ -99,7 +95,6 @@ public class Menu {
     public void addDrink(Drink drink) {
         drinks.add(drink);
     }
-
 
     public void addTopping(Topping topping) {
         toppings.add(topping);
@@ -113,18 +108,15 @@ public class Menu {
         PreparationTypes.add(PreparationType);
     }
 
-  
     public void setDrinks(List<Drink> drinks) {
         this.drinks = drinks;
         System.out.println("Drinks list set successfully.");
     }
 
-  
     public void setToppings(List<Topping> toppings) {
         this.toppings = toppings;
         System.out.println("Toppings list set successfully.");
     }
-
 
     public void setSweetnessLevels(List<Sweetness> sweetnessLevels) {
         this.sweetnessLevels = sweetnessLevels;
@@ -140,4 +132,3 @@ public class Menu {
         return drinks;
     }
 }
-

@@ -4,7 +4,7 @@ public class Drink {
     private float Price;
     private String sweetnessLevel;
     private Topping topping;
-    private PreparationType preparationType; 
+    private PreparationType preparationType;
     private DrinkCategory category;
     private int sales;
 
@@ -13,10 +13,10 @@ public class Drink {
         this.drinkID = drinkID;
         this.name = name;
         this.Price = Price;
-        this.sweetnessLevel = "หวานปกติ"; 
-        this.topping = null; 
+        this.sweetnessLevel = "หวานปกติ";
+        this.topping = null;
         this.preparationType = new PreparationType(1, "ร้อน", 0); // ไม่มีประเภทเครื่องดื่มเริ่มต้น
-        this.sales = 0; 
+        this.sales = 0;
         this.category = category;
     }
 
@@ -64,5 +64,4 @@ public class Drink {
         return category;
     }
 
-   
 }

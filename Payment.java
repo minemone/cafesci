@@ -15,15 +15,15 @@ public class Payment {
         this.customer = customer;
     }
 
-     // ฟังก์ชันเพื่อใช้พอยต์เป็นส่วนลด
-     public double applyPointsDiscount(double pointsToUse) {
-             int availablePoints = customer.getPoints();
-             if (pointsToUse > availablePoints) {
-                 System.out.println("คะแนนพอยต์ไม่พอ");
-                 return 0;
-             }
-             double discount = pointsToUse; // 1 พอยต์ = 1 บาท
-             customer.reducePoints(pointsToUse); // หักพอยต์ที่ใช้
+    // ฟังก์ชันเพื่อใช้พอยต์เป็นส่วนลด
+    public double applyPointsDiscount(double pointsToUse) {
+        int availablePoints = customer.getPoints();
+        if (pointsToUse > availablePoints) {
+            System.out.println("คะแนนพอยต์ไม่พอ");
+            return 0;
+        }
+        double discount = pointsToUse; // 1 พอยต์ = 1 บาท
+        customer.reducePoints(pointsToUse); // หักพอยต์ที่ใช้
         return discount;
     }
 
@@ -60,7 +60,7 @@ public class Payment {
                 String expirationDate = scanner.nextLine();
                 System.out.print("CVV: ");
                 String cvv = scanner.nextLine();
-                
+
                 // ตรวจสอบและดำเนินการชำระเงินบัตรเครดิตได้ที่นี่
             }
 
@@ -75,5 +75,5 @@ public class Payment {
         } else {
             System.out.println("ไม่สามารถสร้างใบเสร็จได้ เนื่องจากคำสั่งซื้อเป็น null");
         }
-}
+    }
 }

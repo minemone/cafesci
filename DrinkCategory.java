@@ -16,5 +16,5 @@ public class DrinkCategory {
     public String getCategoryName() {
         return categoryName;
     }
-    
+
 }

@@ -33,17 +33,18 @@ public class Receipt {
             int quantity = quantities.get(i);
 
             double prepprice = (drink.getPreparationType() != null) ? drink.getPreparationType().getPrepprice() : 0;
-            
+
             double itemTotal = (drink.getPrice() + prepprice) * quantity;
 
             calculatedTotal += itemTotal;
         }
         return calculatedTotal;
     }
-    
+
     public double getNetTotal() {
         return totalPrice - discount;
     }
+
     public void printReceipt() {
         System.out.println("=================================");
         System.out.println("            Cafe Sci             ");
@@ -73,7 +74,7 @@ public class Receipt {
         }
 
         System.out.println("---------------------------------");
-        System.out.printf("ยอดรวม          %6.2f บาท\n", totalPrice);
+        System.out.printf("ยอดรวม          %6.2f บาท\n", totalPrice-discount);
         System.out.printf("ส่วนลด          %6.2f บาท\n", discount);
         System.out.printf("ยอดสุทธิ         %6.2f บาท\n", getNetTotal());
         System.out.println("---------------------------------");

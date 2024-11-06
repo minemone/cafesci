@@ -8,10 +8,11 @@ public class Order {
     private double totalAmount;
     private double discount; // ฟิลด์ส่วนลด
     private Customer customer;
-    private List<Drink> drinks;         
-    private List<Integer> quantities;   
+    private List<Drink> drinks;
+    private List<Integer> quantities;
 
-    public Order(int orderId, Customer customer, double totalAmount, List<Drink> drinks, List<Integer> quantities, double discount) {
+    public Order(int orderId, Customer customer, double totalAmount, List<Drink> drinks, List<Integer> quantities,
+            double discount) {
         this.orderId = orderId;
         this.orderDateTime = LocalDateTime.now();
         this.customer = customer;

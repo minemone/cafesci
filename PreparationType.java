@@ -5,11 +5,11 @@ public class PreparationType {
     private float prepprice;
 
     // Constructor
-    public PreparationType(int prepID, String prepName,float prepprice) {
+    public PreparationType(int prepID, String prepName, float prepprice) {
         this.prepID = prepID;
         this.prepName = prepName;
         this.prepprice = prepprice;
-      
+
     }
 
     public int getPrepID() {
@@ -21,24 +21,18 @@ public class PreparationType {
     }
 
     public void setPrepID(int prepID) {
-        this.prepID= prepID;
+        this.prepID = prepID;
     }
 
     public void setPrepName(String prepName) {
-        this.prepName = prepName; 
+        this.prepName = prepName;
     }
 
     public void setprepprice(float prepprice) {
-        this.prepprice= prepprice;
+        this.prepprice = prepprice;
     }
-    public float getPrepprice() {  // ตรวจสอบให้แน่ใจว่าเมธอดนี้สะกดถูกต้อง
+
+    public float getPrepprice() { // ตรวจสอบให้แน่ใจว่าเมธอดนี้สะกดถูกต้อง
         return prepprice;
     }
 }
-
-
-
-
-    
-
-

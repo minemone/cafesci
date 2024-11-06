@@ -46,6 +46,7 @@ public class Cart {
     // เพิ่มประเภทเครื่องดื่ม
     public void addItem(PreparationType selectedPreparationType) {
         preparationTypes.add(selectedPreparationType);
+        totalPrice += selectedPreparationType.getPrepprice(); // เพิ่มราคาของ PreparationType ลงใน totalPrice
     }
 
     public boolean isEmpty() {
@@ -59,7 +60,7 @@ public class Cart {
     // แสดงตะกร้าพร้อมจำนวนสินค้า
     public void displayCart() {
         StringBuilder cartSummary = new StringBuilder();
-        
+
         // แสดงรายการเครื่องดื่มในตะกร้า
         cartSummary.append("รายการเครื่องดื่มในตะกร้า:\n");
         if (drinks.isEmpty()) {
@@ -70,14 +71,14 @@ public class Cart {
                 Drink drink = drinks.get(i);
                 int quantity = quantities.get(i);
                 cartSummary.append(drink.getName())
-                           .append(" (จำนวน: ").append(quantity)
-                           .append(", ราคา: ").append(drink.getPrice() * quantity)
-                           .append(" บาท)\n");
+                        .append(" (จำนวน: ").append(quantity)
+                        .append(", ราคา: ").append(drink.getPrice() * quantity)
+                        .append(" บาท)\n");
                 totalDrinkCount += quantity;
             }
             cartSummary.append("จำนวนเครื่องดื่มทั้งหมด: ").append(totalDrinkCount).append("\n");
         }
-        
+
         // แสดงรายการท็อปปิ้งในตะกร้า
         cartSummary.append("รายการท็อปปิ้งในตะกร้า:\n");
         if (toppings.isEmpty()) {
@@ -87,10 +88,10 @@ public class Cart {
                 Topping topping = toppings.get(i);
                 int quantity = toppingQuantities.get(i);
                 cartSummary.append(topping.getToppingName())
-                           .append(" (จำนวน: ").append(quantity).append(")\n");
+                        .append(" (จำนวน: ").append(quantity).append(")\n");
             }
         }
-        
+
         // แสดงระดับความหวาน
         cartSummary.append("ระดับความหวาน: ");
         if (sweetnesses.isEmpty()) {
@@ -101,7 +102,7 @@ public class Cart {
             }
             cartSummary.append("\n");
         }
-        
+
         // แสดงประเภทเครื่องดื่ม
         cartSummary.append("ประเภทเครื่องดื่ม: ");
         if (preparationTypes.isEmpty()) {
@@ -112,10 +113,10 @@ public class Cart {
             }
             cartSummary.append("\n");
         }
-        
+
         // แสดงราคารวม
         cartSummary.append("ราคารวม: ").append(totalPrice).append(" บาท\n");
-        
+
         // พิมพ์ผลลัพธ์ออกมา
         System.out.println(cartSummary.toString());
     }
@@ -134,10 +135,9 @@ public class Cart {
     public List<Drink> getDrinks() {
         return drinks;
     }
-    
+
     public List<Integer> getQuantities() {
         return quantities;
     }
 
-    
 }

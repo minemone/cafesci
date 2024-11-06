@@ -18,13 +18,13 @@ public class Topping {
     public void setToppingName(String toppingName) {
         this.ToppingName = toppingName;
     }
+
     public int getToppingID() {
         return ToppingID;
     }
 
     public void setToppingID(int toppingID) {
-        this.ToppingID= toppingID;
+        this.ToppingID = toppingID;
     }
 
-    
 }

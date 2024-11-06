@@ -53,8 +53,8 @@ public class Cafetable {
 
     // Method แสดงรายละเอียดของแต่ละโต๊ะ
     public void showDetailsOfTable() {
-        System.out.println("รายละเอียดโต๊ะ: ID = " + cafetableID + ", ชื่อโต๊ะ = " + tableName + 
-                           ", ราคาโต๊ะ = " + tablePrice + ", สถานะ = " + status);
+        System.out.println("รายละเอียดโต๊ะ: ID = " + cafetableID + ", ชื่อโต๊ะ = " + tableName +
+                ", ราคาโต๊ะ = " + tablePrice + ", สถานะ = " + status);
     }
 
     // Method ล้างโต๊ะ
