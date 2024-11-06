@@ -16,6 +16,7 @@ public class CafeManagement {
     private Scanner scanner;
     private Status currentOrderStatus;
     private double discount = 0.0;
+    
 
     private DrinkCategory allCategory;
     private DrinkCategory promoCategory;
@@ -622,19 +623,23 @@ public class CafeManagement {
         }
     }
 
-    public void processPayment(Order order) {
-        if (order != null) {
-            // ดึงข้อมูล drinks และ quantities จาก cart
-            List<Drink> drinks = cart.getDrinks();
-            List<Integer> quantities = cart.getQuantities();
+    // public void processPayment(Order order) {
+    //     if (order != null) {
+    //         // ดึงข้อมูล drinks และ quantities จาก cart
+    //         List<Drink> drinks = cart.getDrinks();
+    //         List<Integer> quantities = cart.getQuantities();
+    //         List<Topping> toppings = cart.getToppings(); 
+    //         List<Sweetness> sweetnessLevels = cart.getSweetnessLevels(); 
+    //         List<PreparationType> preparationTypes = cart.getPreparationTypes();
 
-            // สร้าง Receipt โดยส่ง order, drinks, และ quantities
-            Receipt receipt = new Receipt(order, drinks, quantities, discount);
-            receipt.printReceipt();
-        } else {
-            System.out.println("ไม่สามารถสร้างใบเสร็จได้ เนื่องจากคำสั่งซื้อเป็น null");
-        }
-    }
+    //         // สร้าง Receipt โดยส่ง order, drinks, และ quantities
+    //         Receipt receipt = new Receipt(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes, discount);
+
+    //         receipt.printReceipt();
+    //     } else {
+    //         System.out.println("ไม่สามารถสร้างใบเสร็จได้ เนื่องจากคำสั่งซื้อเป็น null");
+    //     }
+    // }
 
     private void proceedToPayment() {
         if (cart.isEmpty()) {
@@ -643,7 +648,6 @@ public class CafeManagement {
         }
 
         float totalAmount = cart.getTotalPrice();
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("เลือกวิธีการชำระเงิน:");
         System.out.println("1. QR Code");
@@ -656,12 +660,15 @@ public class CafeManagement {
 
         List<Drink> drinks = cart.getDrinks();
         List<Integer> quantities = cart.getQuantities();
+        List<Topping> toppings = cart.getToppings();
+        List<Sweetness> sweetnessLevels = cart.getSweetnessLevels();
+        List<PreparationType> preparationTypes = cart.getPreparationTypes();
 
         int orderId = (int) (Math.random() * 1000);
-        Order order = new Order(orderId, currentCustomer, totalAmount, drinks, quantities, discount);
+        Order order = new Order(orderId, currentCustomer, totalAmount, drinks, quantities, 0.0);
 
-        Payment payment = new Payment(totalAmount, paymentMethod, currentCustomer);
-        payment.processPayment(order, drinks, quantities);
+        paymentSystem = new Payment(totalAmount, paymentMethod, currentCustomer);
+        paymentSystem.processPayment(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes);
 
         cart.clearCart();
     }

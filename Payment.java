@@ -27,13 +27,13 @@ public class Payment {
         return discount;
     }
 
-    public void processPayment(Order order, List<Drink> drinks, List<Integer> quantities) {
+    public void processPayment(Order order, List<Drink> drinks, List<Integer> quantities, List<Topping> toppings,
+            List<Sweetness> sweetnessLevels, List<PreparationType> preparationTypes) {
         if (order != null) {
             Scanner scanner = new Scanner(System.in);
 
-            double availablePoints = order.getCustomer().getPoints(); // สมมติว่ามีเมธอด getPoints() ใน Customer
+            double availablePoints = order.getCustomer().getPoints();
             System.out.println("พอยต์ที่คุณมีอยู่: " + availablePoints);
-
             System.out.print("คุณต้องการใช้พอยต์เป็นส่วนลดหรือไม่? (yes/no): ");
             String usePoints = scanner.nextLine();
 
@@ -47,11 +47,12 @@ public class Payment {
             double finalAmount = amount - discount;
             System.out.printf("ยอดชำระหลังหักส่วนลด: %.2f บาท\n", finalAmount);
 
+            // เลือกวิธีการชำระเงิน
             if (method.equalsIgnoreCase("QR")) {
                 System.out.println("ชำระเงินผ่าน QR Code...");
-                // เพิ่มโค้ดสำหรับชำระเงินผ่าน QR ได้ที่นี่
             } else if (method.equalsIgnoreCase("Credit Card")) {
                 System.out.println("กรุณาใส่ข้อมูลบัตรเครดิต:");
+                scanner.nextLine(); // Clear newline
                 System.out.print("หมายเลขบัตร: ");
                 String cardNumber = scanner.nextLine();
                 System.out.print("ชื่อผู้ถือบัตร: ");
@@ -60,20 +61,19 @@ public class Payment {
                 String expirationDate = scanner.nextLine();
                 System.out.print("CVV: ");
                 String cvv = scanner.nextLine();
-
-                // ตรวจสอบและดำเนินการชำระเงินบัตรเครดิตได้ที่นี่
             }
 
-            // สร้างใบเสร็จและพิมพ์
-            Receipt receipt = new Receipt(order, drinks, quantities, discount);
+            // สร้างและพิมพ์ใบเสร็จ
+            Receipt receipt = new Receipt(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes,
+                    discount);
             receipt.printReceipt();
 
-            // เพิ่มพอยต์ที่ได้รับจากการซื้อ
-            double earnedPoints = finalAmount * 0.10; // ได้พอยต์ 10% ของยอดชำระ
+            // เพิ่มพอยต์จากยอดการสั่งซื้อ
+            double earnedPoints = finalAmount * 0.10;
             customer.addPoints((int) earnedPoints);
-            System.out.printf("คุณได้รับพอยต์ %.1f พอยต์\n", earnedPoints);
         } else {
             System.out.println("ไม่สามารถสร้างใบเสร็จได้ เนื่องจากคำสั่งซื้อเป็น null");
         }
     }
+
 }

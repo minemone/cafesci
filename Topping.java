@@ -14,7 +14,6 @@ public class Topping {
         return ToppingName;
     }
 
-    // Method ตั้งค่าท็อปปิ้ง
     public void setToppingName(String toppingName) {
         this.ToppingName = toppingName;
     }

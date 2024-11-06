@@ -17,12 +17,9 @@ public class Sweetness {
         this.SweetnessID = SweetnessID;
     }
 
-    // Method ดึงระดับความหวาน
     public String getSweetnessName() {
         return SweetNessName;
     }
-
-    // Method ตั้งค่าระดับความหวาน
     public void setSweetnessName(String SweetNessName) {
         this.SweetNessName = SweetNessName;
     }

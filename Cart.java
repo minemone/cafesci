@@ -28,13 +28,21 @@ public class Cart {
         totalPrice += itemTotalPrice;
     }
 
-    public boolean isEmpty() {
-        return drinks.isEmpty();
+     // เมธอดเพื่อดึงรายการท็อปปิ้งทั้งหมดจากตะกร้า
+     public List<Topping> getToppings() {
+        return toppings;
     }
 
-    public float getTotalPrice() {
-        return totalPrice;
+    // เมธอดเพื่อดึงรายการระดับความหวานทั้งหมดจากตะกร้า
+    public List<Sweetness> getSweetnessLevels() {
+        return sweetnessLevels;
     }
+
+    // เมธอดเพื่อดึงรายการประเภทเครื่องดื่มทั้งหมดจากตะกร้า
+    public List<PreparationType> getPreparationTypes() {
+        return preparationTypes;
+    }
+
 
     // แสดงตะกร้าพร้อมจำนวนสินค้า
     public void displayCart() {
@@ -92,11 +100,20 @@ public class Cart {
         System.out.println("ตะกร้าถูกล้างเรียบร้อยแล้ว.");
     }
 
-    public List<Drink> getDrinks() {
-        return drinks;
+    public boolean isEmpty() {
+        return drinks.isEmpty();
+    }
+
+    public float getTotalPrice() {
+        return totalPrice;
     }
 
     public List<Integer> getQuantities() {
         return quantities;
     }
+    public List<Drink> getDrinks() {
+        return drinks;
+    }
+
 }
+
