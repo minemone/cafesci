@@ -282,7 +282,7 @@ public class CafeManagement {
     private void placePreOrder() {
         System.out.println("การสั่งเครื่องดื่มแบบล่วงหน้า:");
         showOptions5choiceCategory();
-        addToCartadvance();
+        // addToCartadvance();
 
         if (cart.isEmpty()) {
             System.out.println("กรุณาเพิ่มรายการเครื่องดื่มก่อนการสั่งล่วงหน้า.");
@@ -310,8 +310,10 @@ public class CafeManagement {
         int Options2choice = getUserInput();
         switch (Options2choice) {
             case 1:
-                System.out.println("ฟังก์ชันการจัดส่งยังไม่ถูกพัฒนา");
-                cart.clearCart();
+            System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
+            String deliveryAddress = scanner.nextLine();
+            System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
+            displayDrinkOptions();
                 break;
             case 2:
                 displayDrinkOptions();
@@ -444,164 +446,167 @@ public class CafeManagement {
 
     private void addToCart() {
         System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
-
-        // ตรวจสอบว่าอินพุตเป็นตัวเลขก่อนอ่าน
         if (!scanner.hasNextInt()) {
             System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-            scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+            scanner.next();
             return;
         }
         int drinkId = scanner.nextInt();
         scanner.nextLine();
-
+    
         Drink selectedDrink = menu.getDrink(drinkId);
         if (selectedDrink != null) {
-            cart.addItem(selectedDrink);
+            Topping selectedTopping = null;
+            Sweetness selectedSweetness = null;
+            PreparationType selectedPreparationType = null;
+    
             System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
-
+    
             // เพิ่มท็อปปิ้ง
             System.out.print("ต้องการเพิ่มท็อปปิ้งหรือไม่? (yes/no): ");
             String addTopping = scanner.nextLine();
             if (addTopping.equalsIgnoreCase("yes")) {
                 menu.displayMenutopping();
                 System.out.print("กรุณาเลือกหมายเลขท็อปปิ้ง: ");
-
                 if (!scanner.hasNextInt()) {
                     System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+                    scanner.next();
                     return;
                 }
                 int toppingNum = scanner.nextInt();
-                scanner.nextLine(); // จัดการ newline
-                Topping selectedTopping = menu.getTopping(toppingNum);
+                scanner.nextLine();
+                selectedTopping = menu.getTopping(toppingNum);
                 if (selectedTopping != null) {
-                    selectedDrink.setTopping(selectedTopping); // ตั้งค่าท็อปปิ้งให้กับเครื่องดื่ม
-                    System.out
-                            .println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
+                    System.out.println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " เรียบร้อยแล้ว.");
                 } else {
                     System.out.println("ท็อปปิ้งไม่ถูกต้อง.");
                 }
             }
-
+    
             // เลือกระดับความหวาน
             System.out.print("เลือกระดับความหวานหรือไม่? (yes/no): ");
             String addSweetness = scanner.nextLine();
             if (addSweetness.equalsIgnoreCase("yes")) {
                 menu.displayMenusweetness();
                 System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
-
                 if (!scanner.hasNextInt()) {
                     System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+                    scanner.next();
                     return;
                 }
-
                 int sweetnessNum = scanner.nextInt();
-                scanner.nextLine(); // จัดการ newline
-                Sweetness selectedSweetness = menu.getSweetness(sweetnessNum);
+                scanner.nextLine();
+                selectedSweetness = menu.getSweetness(sweetnessNum);
                 if (selectedSweetness != null) {
-                    selectedDrink.setSweetnessLevel(selectedSweetness.getSweetnessName()); // ตั้งค่าระดับความหวานให้กับเครื่องดื่ม
-                    System.out
-                            .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+                    System.out.println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
                 } else {
                     System.out.println("ระดับความหวานไม่ถูกต้อง.");
                 }
             }
-
+    
             // เลือกประเภทเครื่องดื่ม
             System.out.print("เลือกประเภทเครื่องดื่มหรือไม่? (yes/no): ");
             String addPreparationType = scanner.nextLine();
             if (addPreparationType.equalsIgnoreCase("yes")) {
                 menu.displayPreparationType();
                 System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-
                 if (!scanner.hasNextInt()) {
                     System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+                    scanner.next();
                     return;
                 }
-
                 int preparationTypeNum = scanner.nextInt();
-                scanner.nextLine(); // จัดการ newline
-                PreparationType selectedPreparationType = menu.getPreparationType(preparationTypeNum);
+                scanner.nextLine();
+                selectedPreparationType = menu.getPreparationType(preparationTypeNum);
                 if (selectedPreparationType != null) {
-                    selectedDrink.setPreparationType(selectedPreparationType);
-                    cart.addItem(selectedPreparationType);
-                    System.out.println(
-                            "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+                    System.out.println("เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
                 } else {
                     System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
                 }
             }
+    
+            // เลือกจำนวนแก้ว
+            System.out.print("กรุณาระบุจำนวนแก้วที่ต้องการ: ");
+            int quantity = scanner.nextInt();
+            scanner.nextLine();
+    
+            if (quantity > 0) {
+                // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับท็อปปิ้ง ความหวาน ประเภทเครื่องดื่ม และจำนวน
+                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
+                System.out.println("เพิ่ม " + selectedDrink.getName() + " จำนวน " + quantity + " แก้ว ลงในตะกร้าเรียบร้อยแล้ว.");
+            } else {
+                System.out.println("จำนวนไม่ถูกต้อง กรุณาลองใหม่.");
+            }
+    
         } else {
             System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
-
+    
         displayDrinkOptions();
     }
+    
+    // private void addToCartadvance() { // ตะกร้าสั่งล่วงหน้า test
+    //     System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
+    //     int drinkId = getUserInput();
+    //     Drink selectedDrink = menu.getDrink(drinkId);
+    //     if (selectedDrink != null) {
+    //         cart.addItem(selectedDrink);
+    //         System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
+    //         System.out.print("ต้องการเพิ่มท็อปปิ้งหรือไม่? (yes/no): ");
+    //         String addTopping = scanner.nextLine();
+    //         if (addTopping.equalsIgnoreCase("yes")) {
+    //             menu.displayMenutopping();
+    //             System.out.print("กรุณาเลือกหมายเลขท็อปปิ้ง: ");
+    //             int toppingNum = scanner.nextInt();
+    //             scanner.nextLine(); // เพื่อเคลียร์ newline
+    //             Topping selectedTopping = menu.getTopping(toppingNum);
+    //             if (selectedTopping != null) {
+    //                 cart.addItem(selectedTopping);
+    //                 System.out
+    //                         .println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
+    //             } else {
+    //                 System.out.println("ท็อปปิ้งไม่ถูกต้อง.");
+    //             }
+    //         }
 
-    private void addToCartadvance() { // ตะกร้าสั่งล่วงหน้า test
-        System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
-        int drinkId = getUserInput();
-        Drink selectedDrink = menu.getDrink(drinkId);
-        if (selectedDrink != null) {
-            cart.addItem(selectedDrink);
-            System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
-            System.out.print("ต้องการเพิ่มท็อปปิ้งหรือไม่? (yes/no): ");
-            String addTopping = scanner.nextLine();
-            if (addTopping.equalsIgnoreCase("yes")) {
-                menu.displayMenutopping();
-                System.out.print("กรุณาเลือกหมายเลขท็อปปิ้ง: ");
-                int toppingNum = scanner.nextInt();
-                scanner.nextLine(); // เพื่อเคลียร์ newline
-                Topping selectedTopping = menu.getTopping(toppingNum);
-                if (selectedTopping != null) {
-                    cart.addItem(selectedTopping);
-                    System.out
-                            .println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ท็อปปิ้งไม่ถูกต้อง.");
-                }
-            }
+    //         System.out.print("เลือกระดับความหวานหรือไม่? (yes/no): ");
+    //         String addSweetness = scanner.nextLine();
+    //         if (addSweetness.equalsIgnoreCase("yes")) {
+    //             menu.displayMenusweetness();
+    //             System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
+    //             int sweetnessNum = scanner.nextInt();
+    //             scanner.nextLine(); // เพื่อเคลียร์ newline
+    //             Sweetness selectedSweetness = menu.getSweetness(sweetnessNum);
+    //             if (selectedSweetness != null) {
+    //                 cart.addItem(selectedSweetness);
+    //                 System.out
+    //                         .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+    //             } else {
+    //                 System.out.println("ระดับความหวานไม่ถูกต้อง.");
+    //             }
+    //         }
 
-            System.out.print("เลือกระดับความหวานหรือไม่? (yes/no): ");
-            String addSweetness = scanner.nextLine();
-            if (addSweetness.equalsIgnoreCase("yes")) {
-                menu.displayMenusweetness();
-                System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
-                int sweetnessNum = scanner.nextInt();
-                scanner.nextLine(); // เพื่อเคลียร์ newline
-                Sweetness selectedSweetness = menu.getSweetness(sweetnessNum);
-                if (selectedSweetness != null) {
-                    cart.addItem(selectedSweetness);
-                    System.out
-                            .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ระดับความหวานไม่ถูกต้อง.");
-                }
-            }
+    //         System.out.print("เลือกประเภทเครื่องดื่มหรือไม่? (yes/no): ");
+    //         String addPreparationType = scanner.nextLine();
+    //         if (addPreparationType.equalsIgnoreCase("yes")) {
+    //             menu.displayPreparationType();
+    //             System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
+    //             int PreparationTypeNum = scanner.nextInt();
+    //             scanner.nextLine(); // เพื่อเคลียร์ newline
+    //             PreparationType selectedPreparationType = menu.getPreparationType(PreparationTypeNum);
+    //             if (selectedPreparationType != null) {
+    //                 cart.addItem(selectedPreparationType);
+    //                 System.out.println(
+    //                         "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+    //             } else {
+    //                 System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
+    //             }
+    //         }
+    //     } else {
+    //         System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+    //     }
 
-            System.out.print("เลือกประเภทเครื่องดื่มหรือไม่? (yes/no): ");
-            String addPreparationType = scanner.nextLine();
-            if (addPreparationType.equalsIgnoreCase("yes")) {
-                menu.displayPreparationType();
-                System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-                int PreparationTypeNum = scanner.nextInt();
-                scanner.nextLine(); // เพื่อเคลียร์ newline
-                PreparationType selectedPreparationType = menu.getPreparationType(PreparationTypeNum);
-                if (selectedPreparationType != null) {
-                    cart.addItem(selectedPreparationType);
-                    System.out.println(
-                            "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
-                }
-            }
-        } else {
-            System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
-        }
-
-    }
+    // }
 
     private void viewCart() {
         System.out.println("\n--- ตะกร้าของคุณ ---");

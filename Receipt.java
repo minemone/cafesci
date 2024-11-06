@@ -31,18 +31,14 @@ public class Receipt {
         for (int i = 0; i < drinks.size(); i++) {
             Drink drink = drinks.get(i);
             int quantity = quantities.get(i);
-
-            double prepprice = (drink.getPreparationType() != null) ? drink.getPreparationType().getPrepprice() : 0;
-
-            double itemTotal = (drink.getPrice() + prepprice) * quantity;
-
+            
+            // คำนวณราคาต่อแก้ว รวมราคาจาก PreparationType และจำนวนที่เลือก
+            double prepPrice = (drink.getPreparationType() != null) ? drink.getPreparationType().getPrepprice() : 0;
+            double itemTotal = (drink.getPrice() + prepPrice) * quantity;
+    
             calculatedTotal += itemTotal;
         }
         return calculatedTotal;
-    }
-
-    public double getNetTotal() {
-        return totalPrice - discount;
     }
 
     public void printReceipt() {
@@ -55,14 +51,17 @@ public class Receipt {
         System.out.println("---------------------------------");
         System.out.println("รายการสินค้า");
         System.out.printf("%-4s %-30s %10s\n", "จำนวน", "สินค้า", "ราคา");
-
+    
+        double recalculatedTotalPrice = 0.0;  // คำนวณยอดรวมใหม่
+    
         for (int i = 0; i < drinks.size(); i++) {
             Drink drink = drinks.get(i);
             int quantity = quantities.get(i);
-
-            double prepprice = (drink.getPreparationType() != null) ? drink.getPreparationType().getPrepprice() : 0;
-            double totalItemPrice = (drink.getPrice() + prepprice) * quantity;
-
+    
+            double prepPrice = (drink.getPreparationType() != null) ? drink.getPreparationType().getPrepprice() : 0;
+            double totalItemPrice = (drink.getPrice() + prepPrice) * quantity;
+            recalculatedTotalPrice += totalItemPrice; // เพิ่มราคาแต่ละรายการในยอดรวมใหม่
+    
             String displayName = drink.getName();
             if (drink.getPreparationType() != null) {
                 displayName += " (" + drink.getPreparationType().getPrepName() + ")";
@@ -70,23 +69,28 @@ public class Receipt {
             if (drink.getTopping() != null) {
                 displayName += " + " + drink.getTopping().getToppingName();
             }
+            if (drink.getSweetness() != null) {
+                displayName += " (ความหวาน: " + drink.getSweetness() + ")";
+            }
+    
             System.out.printf("%-4d %-30s %10.2f บาท\n", quantity, displayName, totalItemPrice);
         }
-
+    
         System.out.println("---------------------------------");
-        System.out.printf("ยอดรวม          %6.2f บาท\n", totalPrice-discount);
-        System.out.printf("ส่วนลด          %6.2f บาท\n", discount);
-        System.out.printf("ยอดสุทธิ         %6.2f บาท\n", getNetTotal());
+        System.out.printf("ยอดรวมทั้งหมด        %6.2f บาท\n", recalculatedTotalPrice);
+        System.out.printf("ส่วนลด                %6.2f บาท\n", discount);
+        System.out.printf("ยอดสุทธิ              %6.2f บาท\n", recalculatedTotalPrice - discount);
         System.out.println("---------------------------------");
-
+    
         System.out.printf("ข้อมูลสมาชิก %s\n", personID);
         System.out.printf("%-10s %6s %6s %6s\n", "พอยท์สมาชิก", "ได้รับ", "ใช้ไป", "คงเหลือ");
-
-        double pointsReceived = pointsEarned;
-        double pointsUsed = discount; // ส่วนลดที่ใช้จากพอยท์
-        double pointsRemaining = (order.getCustomer().getPoints() - pointsUsed) + pointsReceived; // พอยท์คงเหลือ
-
+    
+        double pointsReceived = recalculatedTotalPrice * 0.10; // พอยท์ที่ได้รับใหม่
+        double pointsUsed = discount;
+        double pointsRemaining = (order.getCustomer().getPoints() - pointsUsed) + pointsReceived;
+    
         System.out.printf("%-10s %6.1f %6.1f %6.1f\n", "", pointsReceived, pointsUsed, pointsRemaining);
         System.out.println("=================================");
     }
+    
 }
