@@ -47,7 +47,7 @@ public class Menu {
         public void displayPreparationType() {
             System.out.println("\n-- PreparationType  --");
             for (PreparationType PreparationType : PreparationTypes) {
-                System.out.printf("%d. %s - $%.2f\n",PreparationType.getPrepID(), PreparationType.getPrepName(),PreparationType.getPreppice());
+                System.out.printf("%d. %s - $%.2f\n",PreparationType.getPrepID(), PreparationType.getPrepName(),PreparationType.getPrepprice());
          }
 
         System.out.println("=======================\n");

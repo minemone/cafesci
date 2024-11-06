@@ -16,6 +16,7 @@ public class CafeManagement {
     private Role currentRole;
     private Scanner scanner;
     private Status currentOrderStatus;
+    private double discount = 0.0;
 
 
     private DrinkCategory allCategory;
@@ -28,7 +29,8 @@ public class CafeManagement {
     public CafeManagement() {
         menu = new Menu();
         cart = new Cart();
-        paymentSystem = new Payment(0, null);
+        paymentSystem = new Payment(0, null, currentCustomer);
+        currentCustomer = new Customer("U001", "Alice", "alice@example.com", Role.CUSTOMER);
         scanner = new Scanner(System.in);
         // currentRole = Role.CUSTOMER; // กำหนดบทบาทเริ่มต้นเป็น CUSTOMER
         initializeMenu();
@@ -292,7 +294,7 @@ public class CafeManagement {
            // ให้ผู้ใช้เลือกเวลาหลังจากเลือกเครื่องดื่มและตัวเลือกเสร็จ
     LocalDateTime pickupTime = choosePickupTime();
 
-        List<Drink> drinks = new ArrayList<>(cart.getItems());
+        List<Drink> drinks = new ArrayList<>(cart.getDrinks());
         PreOrder preOrder = new PreOrder(preOrders.size() + 1, drinks, pickupTime);
         preOrders.add(preOrder);
 
@@ -311,6 +313,7 @@ public class CafeManagement {
         switch (Options2choice) {
             case 1:
                 System.out.println("ฟังก์ชันการจัดส่งยังไม่ถูกพัฒนา");
+                cart.clearCart();
                 break;
             case 2:
                 displayDrinkOptions();
@@ -444,57 +447,90 @@ public class CafeManagement {
 
     private void addToCart() {
         System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
-        int drinkId = getUserInput();
+        
+        // ตรวจสอบว่าอินพุตเป็นตัวเลขก่อนอ่าน
+        if (!scanner.hasNextInt()) {
+            System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+            scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+            return;
+        }
+        int drinkId = scanner.nextInt();
+        scanner.nextLine(); 
+    
         Drink selectedDrink = menu.getDrink(drinkId);
         if (selectedDrink != null) {
             cart.addItem(selectedDrink);
             System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
+            
+            // เพิ่มท็อปปิ้ง
             System.out.print("ต้องการเพิ่มท็อปปิ้งหรือไม่? (yes/no): ");
             String addTopping = scanner.nextLine();
             if (addTopping.equalsIgnoreCase("yes")) {
                 menu.displayMenutopping();
                 System.out.print("กรุณาเลือกหมายเลขท็อปปิ้ง: ");
+                
+                if (!scanner.hasNextInt()) {
+                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                    scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+                    return;
+                }
+    
                 int toppingNum = scanner.nextInt();
-                scanner.nextLine(); // เพื่อเคลียร์ newline
+                scanner.nextLine(); // จัดการ newline
+    
                 Topping selectedTopping = menu.getTopping(toppingNum);
                 if (selectedTopping != null) {
                     cart.addItem(selectedTopping);
-                    System.out
-                            .println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
+                    System.out.println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
                 } else {
                     System.out.println("ท็อปปิ้งไม่ถูกต้อง.");
                 }
             }
-
+    
+            // เลือกระดับความหวาน
             System.out.print("เลือกระดับความหวานหรือไม่? (yes/no): ");
             String addSweetness = scanner.nextLine();
             if (addSweetness.equalsIgnoreCase("yes")) {
                 menu.displayMenusweetness();
                 System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
+                
+                if (!scanner.hasNextInt()) {
+                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                    scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+                    return;
+                }
+    
                 int sweetnessNum = scanner.nextInt();
-                scanner.nextLine(); // เพื่อเคลียร์ newline
+                scanner.nextLine(); // จัดการ newline
+    
                 Sweetness selectedSweetness = menu.getSweetness(sweetnessNum);
                 if (selectedSweetness != null) {
                     cart.addItem(selectedSweetness);
-                    System.out
-                            .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+                    System.out.println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
                 } else {
                     System.out.println("ระดับความหวานไม่ถูกต้อง.");
                 }
             }
-
+    
+            // เลือกประเภทเครื่องดื่ม
             System.out.print("เลือกประเภทเครื่องดื่มหรือไม่? (yes/no): ");
             String addPreparationType = scanner.nextLine();
             if (addPreparationType.equalsIgnoreCase("yes")) {
                 menu.displayPreparationType();
                 System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-                int PreparationTypeNum = scanner.nextInt();
-                scanner.nextLine(); // เพื่อเคลียร์ newline
-                PreparationType selectedPreparationType = menu.getPreparationType(PreparationTypeNum);
+                
+                if (!scanner.hasNextInt()) {
+                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                    scanner.next(); // ข้ามค่าที่ไม่ถูกต้อง
+                    return;
+                }
+    
+                int preparationTypeNum = scanner.nextInt();
+                scanner.nextLine(); // จัดการ newline
+                PreparationType selectedPreparationType = menu.getPreparationType(preparationTypeNum);
                 if (selectedPreparationType != null) {
                     cart.addItem(selectedPreparationType);
-                    System.out.println(
-                            "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+                    System.out.println("เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
                 } else {
                     System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
                 }
@@ -502,11 +538,10 @@ public class CafeManagement {
         } else {
             System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
-
+    
         displayDrinkOptions();
-
     }
-
+    
     private void addToCartadvance() { // ตะกร้าสั่งล่วงหน้า test
         System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
         int drinkId = getUserInput();
@@ -586,15 +621,18 @@ public class CafeManagement {
 
     public void processPayment(Order order) {
         if (order != null) {
-            Receipt receipt = new Receipt(order);
+            // ดึงข้อมูล drinks และ quantities จาก cart
+            List<Drink> drinks = cart.getDrinks(); 
+            List<Integer> quantities = cart.getQuantities(); 
+            
+            // สร้าง Receipt โดยส่ง order, drinks, และ quantities
+            Receipt receipt = new Receipt(order, drinks, quantities,discount);
             receipt.printReceipt();
         } else {
             System.out.println("ไม่สามารถสร้างใบเสร็จได้ เนื่องจากคำสั่งซื้อเป็น null");
         }
     }
     
-    
-
     private void proceedToPayment() {
         if (cart.isEmpty()) {
             System.out.println("ตะกร้าของคุณว่างอยู่ กรุณาเพิ่มรายการก่อนทำการชำระเงิน.");
@@ -609,33 +647,22 @@ public class CafeManagement {
         System.out.println("2. บัตรเครดิต");
         System.out.print("กรุณาเลือกหมายเลข: ");
         int paymentChoice = scanner.nextInt();
-        scanner.nextLine(); // จัดการ newline character
+        scanner.nextLine(); // จัดการ newline
     
-        String paymentMethod;
-        if (paymentChoice == 1) {
-            paymentMethod = "QR";
-            Payment payment = new Payment(totalAmount, paymentMethod);
-            payment.processPayment();
-        } else if (paymentChoice == 2) {
-            paymentMethod = "Credit Card";
-            Payment payment = new Payment(totalAmount, paymentMethod);
-            payment.processPayment();
-        } else {
-            System.out.println("ตัวเลือกไม่ถูกต้อง");
-            return;
-        }
+        String paymentMethod = (paymentChoice == 1) ? "QR" : "Credit Card";
     
-        // สร้าง Order ก่อนการชำระเงิน
-    // int orderId = (int) (Math.random() * 1000); // สร้างหมายเลขคำสั่งซื้อสุ่ม
-    // Order order = new Order(orderId, currentCustomer, totalAmount);
-
-    // // เรียก processPayment โดยส่ง Order ที่สร้างไว้
-    // Payment payment = new Payment(totalAmount, paymentMethod);
-    // payment.processPayment(order);
-
-    System.out.println("ชำระเงินสำเร็จ ขอบคุณที่ใช้บริการ!");
-    cart.clearCart();
+        List<Drink> drinks = cart.getDrinks();
+        List<Integer> quantities = cart.getQuantities();
+    
+        int orderId = (int) (Math.random() * 1000);
+        Order order = new Order(orderId, currentCustomer, totalAmount, drinks, quantities,discount);
+    
+        Payment payment = new Payment(totalAmount, paymentMethod, currentCustomer);
+        payment.processPayment(order, drinks, quantities);
+    
+        cart.clearCart();
     }
+    
 
     
     public static void main(String[] args) {

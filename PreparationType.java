@@ -9,6 +9,7 @@ public class PreparationType {
         this.prepID = prepID;
         this.prepName = prepName;
         this.prepprice = prepprice;
+      
     }
 
     public int getPrepID() {
@@ -19,20 +20,19 @@ public class PreparationType {
         return prepName;
     }
 
-    public float getPreppice() {
-        return prepprice;
-    }
-
     public void setPrepID(int prepID) {
         this.prepID= prepID;
     }
 
-    public void setprepName(String prepName) {
-        this.prepName =prepName; 
+    public void setPrepName(String prepName) {
+        this.prepName = prepName; 
     }
 
     public void setprepprice(float prepprice) {
         this.prepprice= prepprice;
+    }
+    public float getPrepprice() {  // ตรวจสอบให้แน่ใจว่าเมธอดนี้สะกดถูกต้อง
+        return prepprice;
     }
 }
 

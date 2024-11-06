@@ -22,6 +22,10 @@ public class Person {
         return name;
     }
 
+    public String getPersonID() {
+        return personID;
+    }
+
     public void performAction(String action) {
         switch (role) {
             case CUSTOMER:

@@ -30,7 +30,7 @@ public class Cafetable {
     // Method ติดตามสถานะคำสั่งซื้อ
     public void trackOrderStatus(Order order) {
         System.out.println("Tracking order status for table: " + tableName);
-        System.out.println("Order status: " + order.getStatus());
+        // System.out.println("Order status: " + order.getStatus());
     }
 
     // Method ระบุหมายเลขโต๊ะ
