@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class CafeManagement {
 
     private List<PreOrder> preOrders = new ArrayList<>();
+    private List<Promotion> promotions = new ArrayList<>();
     private List<Order> completedOrders = new ArrayList<>();
     private Menu menu;
     private Cart cart;
@@ -24,15 +25,24 @@ public class CafeManagement {
     private DrinkCategory teaCategory;
     private DrinkCategory coffeeCategory;
     private DrinkCategory milkCategory;
+    private List<Cafetable> tables;
+
+    private String currentPromotion = "";
+    private String drinkName = "";
+    private String drinkType = "";
+    private int durationDays = 0;
+    private int promotionDuration = 0; // วัน
 
     // Constructor
     public CafeManagement() {
         menu = new Menu();
         cart = new Cart();
+        tables = new ArrayList<>();
         paymentSystem = new Payment(0, null, currentCustomer);
         currentCustomer = new Customer("U001", "Alice", "alice@example.com", Role.CUSTOMER);
         scanner = new Scanner(System.in);
         initializeMenu();
+        initializeTables();
     }
 
     private void initializeMenu() {
@@ -154,7 +164,6 @@ public class CafeManagement {
      * ==============================================================
      */
 
-
     private void displayCustomerOptions() {
         System.out.println("\n== ตัวเลือกสำหรับลูกค้า ==");
 
@@ -164,6 +173,34 @@ public class CafeManagement {
         System.out.println("4. ติดตามสถานะการจัดส่ง");
         System.out.println("\n0. ออกจากระบบ");
         System.out.print("กรุณาเลือกหมายเลข: ");
+    }
+
+    private void handleCustomerOptions(int choice) {
+        switch (choice) {
+            case 1:
+                System.out.println("ฟังก์ชันนี้เฉพาะสำหรับลูกค้าเท่านั้น.");
+                chooseOrderType();
+                break;
+            case 2:
+                System.out.println("\n");
+                reserveTableByInput();
+                break;
+            case 3:
+                trackOrderStatus(); // เรียกใช้ฟังก์ชันติดตามสถานะคำสั่งซื้อ
+                break;
+            case 4:
+                trackDeliveryStatus(); // เรียกใช้ฟังก์ชันติดตามสถานะการจัดส่ง
+                break;
+            case 5:
+                switchRole();
+                break;
+            case 0:
+                switchRole();
+                System.out.println("ออกจากระบบ.");
+                break;
+            default:
+                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+        }
     }
 
     private void chooseOrderType() {
@@ -327,8 +364,7 @@ public class CafeManagement {
             scanner.nextLine();
             selectedSweetness = menu.getSweetness(sweetnessNum);
             if (selectedSweetness != null) {
-                System.out
-                        .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+                System.out.println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
             } else {
                 System.out.println("ระดับความหวานไม่ถูกต้อง.");
             }
@@ -345,10 +381,19 @@ public class CafeManagement {
             scanner.nextLine();
             selectedPreparationType = menu.getPreparationType(preparationTypeNum);
             if (selectedPreparationType != null) {
-                System.out.println(
-                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+                System.out
+                        .println("เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
             } else {
                 System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
+            }
+
+            // เพิ่มการถามใช้โปรโมชั่น
+            if (!currentPromotion.isEmpty() && promotionDuration > 0) {
+                System.out.print("ต้องการใช้โปรโมชั่น " + currentPromotion + " หรือไม่? (yes/no): ");
+                String usePromotion = scanner.nextLine();
+                if (usePromotion.equalsIgnoreCase("yes")) {
+                    applyPromotionToCart(selectedDrink);
+                }
             }
 
             // เลือกจำนวนแก้ว
@@ -371,6 +416,14 @@ public class CafeManagement {
         displayOrder();
     }
 
+    private void applyPromotionToCart(Drink selectedDrink) {
+        if (currentPromotion.equals("จับคู่แก้วที่ 2 ลด 50%")) {
+            cart.applyDiscount(selectedDrink, 0.5); // ลดราคา 50% สำหรับแก้วที่ 2
+        } else if (currentPromotion.equals("ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3")) {
+            cart.applyDiscount(selectedDrink, 0.3); // ลดราคา 30% สำหรับแก้วที่ 3
+        }
+    }
+
     private void displayOrderMenu() {
         System.out.println("\nเลือกดูเมนูเครื่องดื่มที่คุณต้องการ");
         System.out.println("1.ทั้งหมด");
@@ -387,7 +440,7 @@ public class CafeManagement {
                 displayOrder();
                 break;
             case 2:
-                displayDrinksByCategory(promoCategory);
+
                 displayOrder();
                 break;
             case 3:
@@ -742,33 +795,6 @@ public class CafeManagement {
         return input;
     }
 
-    private void handleCustomerOptions(int choice) {
-        switch (choice) {
-            case 1:
-                System.out.println("ฟังก์ชันนี้เฉพาะสำหรับลูกค้าเท่านั้น.");
-                chooseOrderType();
-                break;
-            case 2:
-                System.out.println("ฟังก์ชันการจองโต๊ะยังไม่ถูกพัฒนา.");
-                break;
-            case 3:
-                trackOrderStatus(); // เรียกใช้ฟังก์ชันติดตามสถานะคำสั่งซื้อ
-                break;
-            case 4:
-                trackDeliveryStatus(); // เรียกใช้ฟังก์ชันติดตามสถานะการจัดส่ง
-                break;
-            case 5:
-                switchRole();
-                break;
-            case 0:
-                switchRole();
-                System.out.println("ออกจากระบบ.");
-                break;
-            default:
-                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
-        }
-    }
-
     private void trackDeliveryStatus() {
         if (currentCustomer != null && !cart.isEmpty()) {
             // ตรวจสอบสถานะการจัดส่ง
@@ -783,7 +809,6 @@ public class CafeManagement {
         }
     }
 
-
     private void trackOrderStatus() {
         if (completedOrders.isEmpty()) {
             System.out.println("คุณยังไม่มีคำสั่งซื้อที่กำลังดำเนินการ");
@@ -792,9 +817,72 @@ public class CafeManagement {
             System.out.println("สถานะคำสั่งซื้อของคุณ: " + latestOrder.getStatus());
         }
     }
-    
-    
-    
+
+    // private void setupPromotion() {
+    // System.out.println("\n=== จัดโปรโมชันเพื่อกระตุ้นยอดขายของเครื่องดื่ม ===");
+
+    // System.out.println("\nขายได้มากที่สุด 3 อันดับแรก");
+    // List<Drink> drinks = menu.getDrinks();
+    // for (int i = 0; i < Math.min(3, drinks.size()); i++) {
+    // Drink drink = drinks.get(i);
+    // System.out.println((i + 1) + ". " + drink.getName() + " (ประเภท" +
+    // drink.getPreparationType().getPrepName() + ") (ขายได้ " + drink.getSales() +
+    // " แก้ว)");
+    // }
+
+    // System.out.println("\nขายได้น้อยที่สุด 3 อันดับแรก");
+    // for (int i = drinks.size() - 1, rank = 4; i >= Math.max(drinks.size() - 3,
+    // 0); i--, rank++) {
+    // Drink drink = drinks.get(i);
+    // System.out.println(rank + ". " + drink.getName() + " (ประเภท" +
+    // drink.getPreparationType().getPrepName() + ") (ขายได้ " + drink.getSales() +
+    // " แก้ว)");
+    // }
+
+    // System.out.println("\n0. ย้อนกลับ");
+    // System.out.print("กรุณาเลือกเครื่องดื่มเพื่อจัดโปรโมชันหรือออกจากระบบ: ");
+    // int subChoice = scanner.nextInt();
+
+    // if (subChoice == 0) return;
+    // if (subChoice >= 1 && subChoice <= drinks.size()) {
+    // Drink selectedDrink = drinks.get(subChoice - 1);
+    // setupPromotionDetails(selectedDrink);
+    // } else {
+    // System.out.println("กรุณาเลือกใหม่");
+    // }
+    // }
+
+    private void setupPromotionDetails(Drink selectedDrink) {
+        System.out.println("=== ตั้งค่าโปรโมชัน (" + selectedDrink.getName() + ") ===");
+        System.out.println("1. เฉพาะ " + selectedDrink.getName());
+        System.out.println("2. ทุกเมนู");
+        int promotionChoice = getUserInput();
+        if (promotionChoice == 1) {
+            drinkName = "เฉพาะ " + selectedDrink.getName();
+        } else if (promotionChoice == 2) {
+            drinkName = "ทุกเมนู";
+        } else {
+            System.out.println("กรุณาเลือกใหม่");
+        }
+
+        System.out.println("\nเลือกประเภท:");
+        System.out.println("1. ทุกประเภท");
+        System.out.println("2. ร้อน");
+        System.out.println("3. ปั่น");
+        int typeChoice = getUserInput();
+        drinkType = (typeChoice == 1) ? "ทุกประเภท" : (typeChoice == 2) ? "ร้อน" : "ปั่น";
+
+        System.out.println("\nเลือกโปรโมชัน:");
+        System.out.println("1. จับคู่แก้วที่ 2 ลด 50%");
+        System.out.println("2. ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3");
+        int promoSelect = getUserInput();
+        currentPromotion = (promoSelect == 1) ? "จับคู่แก้วที่ 2 ลด 50%" : "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3";
+
+        System.out.print("กำหนดระยะเวลา (วัน): ");
+        durationDays = getUserInput();
+        System.out.println("โปรโมชันถูกตั้งค่าเรียบร้อยแล้ว");
+    }
+
     /*
      * ==============================================================
      * ==============================================================
@@ -804,31 +892,6 @@ public class CafeManagement {
      * 
      */
 
-
-
-     private void handleManagerOptions(int choice) {
-        switch (choice) {
-            case 1:
-                displayOrder();  // ตัวเลือกขายเครื่องดื่ม
-                break;
-            case 2:
-                System.out.println("ฟังก์ชันการปรับสถานะหรือดูใบเสร็จยังไม่พร้อมใช้งาน.");
-                break;
-            case 3:
-                trackOrderStatus();  // ตัวอย่างการเรียกใช้ฟังก์ชันติดตามสถานะ
-                break;
-            case 4:
-                System.out.println("ฟังก์ชันจัดโปรโมชันกำลังดำเนินการ.");
-                break;
-            case 5:
-                System.out.println("ออกจากระบบ.");
-                currentRole = null;
-                break;
-            default:
-                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
-        }
-    }
-
     private void displayManagerOptions() {
         System.out.println("\nหน้าหลัก Manager");
         System.out.println("1. ขายรายการเครื่องดื่มและระบุโต๊ะ");
@@ -836,22 +899,26 @@ public class CafeManagement {
         System.out.println("3. ปรับสถานะโต๊ะหรือใบเสร็จจองโต๊ะ");
         System.out.println("4. จัดโปรโมชันเพื่อกระตุ้นยอดขายของเครื่องดื่ม");
         System.out.println("5. ออกจากระบบ");
-        int choiceMa = getUserInput();
-        switch (choiceMa) {
+        System.out.print("กรุณาเลือกเมนู: ");
+    }
+
+    private void handleManagerOptions(int choice) {
+        switch (choice) {
             case 1:
                 displayOrder();
                 break;
             case 2:
-                System.out.println("ฟังก์ชันการจองโต๊ะยังไม่ถูกพัฒนา.");
+                adjustTableStatus();
                 break;
             case 3:
                 trackOrderStatus();
                 break;
             case 4:
-                switchRole();
+
                 break;
             case 5:
                 System.out.println("ออกจากระบบ.");
+                currentRole = null;
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
@@ -1026,6 +1093,261 @@ public class CafeManagement {
         }
     }
 
+    // -----------------------------table---------------------->
+    // Method สำหรับสร้างโต๊ะตัวอย่าง
+    private void initializeTables() {
+        tables.add(new Cafetable(1, "โต๊ะ A1", 5.0));
+        tables.add(new Cafetable(2, "โต๊ะ A2", 5.0));
+        tables.add(new Cafetable(3, "โต๊ะ A3", 5.0));
+        tables.add(new Cafetable(4, "โต๊ะ A4", 5.0));
+        tables.add(new Cafetable(5, "โต๊ะ A5", 10.0));
+        tables.add(new Cafetable(6, "โต๊ะ A6", 10.0));
+    }
+
+    public void displayAllTables() {
+        System.out.println("รายการโต๊ะและสถานะทั้งหมด:");
+        for (Cafetable table : tables) {
+            table.displayTableStatus();
+        }
+    }
+
+    // Method คำนวณยอดเงินที่ต้องชำระสำหรับการจองโต๊ะ
+    public void calculateBill(Cafetable table, String memberID) {
+        System.out.println("\n===== ใบเสร็จ =====");
+        System.out.println("โต๊ะที่จอง: " + table.getTableName());
+        System.out.println("ราคาโต๊ะ: " + table.getTablePrice() + " บาท");
+        System.out.println("ยอดรวมที่ต้องชำระ: " + table.getTablePrice() + " บาท");
+
+        // เรียกเมธอด processPayment เพื่อดำเนินการชำระเงิน
+        processPayment(table, memberID, null);
+    }
+
+    // Method สำหรับการจองโต๊ะโดยรับหมายเลขจากผู้ใช้
+    public void reserveTableByInput() {
+        displayAllTables(); // แสดงโต๊ะทั้งหมดก่อน
+        System.out.print("กรุณาใส่โต๊ะที่ต้องการจอง (ID: 1–6): ");
+        int tableID = scanner.nextInt();
+
+        System.out.print("กรุณาใส่รหัสสมาชิก: ");
+        String memberID = scanner.next() + scanner.nextLine(); // รับรหัสสมาชิก
+
+        // ค้นหาโต๊ะตามหมายเลขที่ผู้ใช้กรอก
+        boolean found = false;
+        for (Cafetable table : tables) {
+            if (table.getTableID() == tableID && table.getStatus().equals("ว่าง")) {
+                // เรียกใช้ reserveTableWithDetails และรับค่ากลับของ reservationDateTime
+                LocalDateTime reservationDateTime = reserveTableWithDetails(table, memberID);
+
+                if (reservationDateTime != null) {
+                    table.setReservationDateTime(reservationDateTime); // ตั้งค่าเวลาจองให้กับโต๊ะ
+                    table.setMemberID(memberID); // ตั้งค่ารหัสสมาชิกให้กับโต๊ะที่จอง
+                    calculateBill(table, memberID); // แสดงหน้าคิดเงินหลังจากการจองโต๊ะ
+                    found = true;
+                } else {
+                    System.out.println("เวลาจองไม่ถูกต้อง กรุณาลองใหม่.");
+                }
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("ไม่พบโต๊ะหมายเลข " + tableID + " หรือโต๊ะไม่ว่าง.");
+        }
+
+    }
+
+    // แก้ไขใน reserveTableWithDetails เพื่อส่งค่า reservationDateTime กลับไป
+    public LocalDateTime reserveTableWithDetails(Cafetable table, String memberID) {
+        // รับเฉพาะชั่วโมงและนาที
+        System.out.print("กรุณาใส่เวลาจอง (เช่น 12:30) : ");
+        String timeInput = scanner.next() + scanner.nextLine();
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime reservationTime = LocalTime.parse(timeInput, timeFormatter);
+            LocalDateTime reservationDateTime = LocalDateTime.now().withHour(reservationTime.getHour())
+                    .withMinute(reservationTime.getMinute());
+
+            return reservationDateTime; // ส่งค่า reservationDateTime กลับไป
+        } catch (Exception e) {
+            System.out.println("รูปแบบเวลาไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+        }
+        return null;
+
+    }
+
+    // ปรับปรุง processPayment ให้รับ reservationDateTime เป็นพารามิเตอร์
+    public void processPayment(Cafetable table, String memberID, LocalDateTime reservationDateTime) {
+        double amount = table.getTablePrice();
+        System.out.println("\nเลือกวิธีการชำระเงิน:");
+        System.out.println("1. QR code");
+        System.out.println("2. ชำระด้วยบัตรเครดิต");
+        System.out.print("กรุณาเลือกวิธีการชำระเงิน: ");
+        int paymentMethod = scanner.nextInt();
+        scanner.nextLine(); // เคลียร์ newline
+
+        if (paymentMethod == 1) {
+            System.out.println("คุณเลือกชำระด้วย QR Code ขอบคุณที่ใช้บริการ!");
+            printReceipt(table, memberID, amount, reservationDateTime); // ส่ง reservationDateTime ให้ printReceipt
+            table.setStatus("รออนุมัติ");
+            displayAllTables();
+            switchRole();
+        } else if (paymentMethod == 2) {
+            System.out.println("กรุณากรอกรายละเอียดบัตรเครดิต...");
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("กรุณาใส่หมายเลขบัตรเครดิต: ");
+            String cardNumber = scanner.nextLine();
+            System.out.print("ชื่อผู้ถือบัตร: ");
+            String cardHolderName = scanner.nextLine();
+            System.out.print("วันหมดอายุ (MM/YY): ");
+            String expirationDate = scanner.nextLine();
+            System.out.print("CVV: ");
+            String cvv = scanner.nextLine();
+
+            CreditCard creditCard = new CreditCard(cardNumber, cardHolderName, expirationDate, cvv);
+            if (creditCard.validateCard()) {
+                System.out.println("การชำระเงินผ่านบัตรเครดิตเสร็จสมบูรณ์!");
+                printReceipt(table, memberID, amount, reservationDateTime); // ส่ง reservationDateTime ให้ printReceipt
+                table.setStatus("รออนุมัติ");
+                displayAllTables();
+                switchRole();
+            } else {
+                System.out.println("ข้อมูลบัตรเครดิตไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+            }
+        } else {
+            System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+            processPayment(table, memberID, reservationDateTime); // ส่ง reservationDateTime อีกครั้ง
+        }
+    }
+
+    // Method แสดงใบเสร็จหลังจากการชำระเงิน
+    public void printReceipt(Cafetable table, String memberID, double amountPaid, LocalDateTime reservationDateTime) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm น.");
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        System.out.println("\n========= Cafe Sci =========");
+        System.out.println("เลขที่ใบเสร็จ: #" + (int) (Math.random() * 1000));
+        System.out.println("รหัสสมาชิก: " + memberID);
+        System.out.println(currentDateTime.format(dateFormatter));
+        System.out.println("----------------------------");
+
+        if (reservationDateTime != null) {
+            System.out.println("เวลาที่จอง: " + reservationDateTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+        } else {
+            System.out.println("เวลาที่จอง: ไม่ระบุ");
+        }
+
+        System.out.println("รายการสินค้า");
+        System.out.println("1   :   " + table.getTableName() + "           "
+                + String.format("%.2f", table.getTablePrice()) + " บาท");
+        System.out.println("----------------------------");
+        System.out.println("ยอดสุทธิ 1 โต๊ะ       " + String.format("%.2f", table.getTablePrice()) + " บาท");
+        System.out.println("ชำระเงิน               " + String.format("%.2f", table.getTablePrice()) + " บาท");
+        System.out.println("เงินทอน              0.00 บาท");
+        System.out.println("----------------------------");
+        System.out.println("\n**หากท่านไม่มาถึงภายใน 15 นาที ทางร้านขอสงวนสิทธิในการปล่อยโต๊ะให้กับลูกค้าท่านอื่น**");
+        System.out.println("============================");
+    }
+
+    // --------------------------------ปรับสถานโต้ะ--------------------------->
+    // เมธอดใน CafeManagement สำหรับการปรับสถานะโต๊ะ
+    public void adjustTableStatus() {
+        displayAllTables(); // แสดงรายการโต๊ะทั้งหมด
+
+        System.out.print("กรุณาใส่หมายเลขโต๊ะที่ต้องการปรับสถานะ: ");
+        int tableID = scanner.nextInt();
+        scanner.nextLine(); // เคลียร์ newline
+
+        // ค้นหาโต๊ะตาม ID ที่ระบุ
+        for (Cafetable table : tables) {
+            if (table.getTableID() == tableID) {
+                System.out.println("สถานะปัจจุบันของโต๊ะ " + table.getTableName() + ": " + table.getStatus());
+                System.out.println("1. ว่าง");
+                System.out.println("2. ไม่ว่าง");
+                System.out.print("กรุณาเลือกสถานะใหม่: ");
+                int statusOption = scanner.nextInt();
+                scanner.nextLine(); // เคลียร์ newline
+                double amountPaid = table.getTablePrice();
+
+                // อัปเดตสถานะตามตัวเลือกที่ผู้จัดการเลือก
+                if (statusOption == 1) {
+                    table.setStatus("ว่าง");
+                    System.out.println(table.getTableName() + " ถูกตั้งค่าสถานะเป็นว่าง.");
+                    displayAllTables();
+                    displayManagerOptions();
+                } else if (statusOption == 2) {
+                    table.setStatus("ไม่ว่าง");
+                    System.out.println(table.getTableName() + " ถูกตั้งค่าสถานะเป็นไม่ว่าง.");
+                    displayAllTables();
+                    displayManagerOptions();
+                } else {
+                    System.out.println("ตัวเลือกไม่ถูกต้อง.");
+                }
+                return;
+                // printReceipt();
+                // printReceipt(Cafetable table, String memberID, double amountPaid);
+            }
+        }
+        System.out.println("ไม่พบโต๊ะหมายเลข " + tableID);
+        displayAllTables();
+        displayManagerOptions();
+    }
+
+    private void addjustOrreciept() {
+        System.out.println("\nปรับสถานะการสั่งซื้อหรือดูใบเสร็จ");
+        System.out.println("1. ปรับสถานะโต๊ะ");
+        System.out.println("2. ดูใบเสร็จจองโต๊ะ");
+        System.out.print("กรุณาเลือกหมายเลข :");
+        int choiceMa = getUserInput();
+
+        switch (choiceMa) {
+            case 1:
+                adjustTableStatus(); // เรียกใช้เมธอดสำหรับปรับสถานะโต๊ะ
+                break;
+            case 2:
+                // ตรวจสอบข้อมูลโต๊ะเพื่อแสดงใบเสร็จ
+                System.out.print("กรุณาใส่หมายเลขโต๊ะที่ต้องการดูใบเสร็จ: ");
+                int tableID = getUserInput();
+                Cafetable selectedTable = null;
+
+                // ค้นหาโต๊ะที่ตรงกับ tableID
+                for (Cafetable table : tables) {
+                    if (table.getTableID() == tableID) {
+                        selectedTable = table;
+                        break;
+                    }
+                }
+
+                if (selectedTable != null) {
+                    System.out.print("กรุณาใส่รหัสสมาชิก: ");
+                    String memberID = selectedTable.getMemberID(); // ดึงรหัสสมาชิกจากโต๊ะที่จอง
+                    double amountPaid = selectedTable.getTablePrice();
+
+                    // ดึงเวลาที่จองโต๊ะจาก `selectedTable`
+                    LocalDateTime reservationDateTime = selectedTable.getReservationDateTime(); // สมมติว่ามี getter
+                                                                                                // นี้ใน Cafetable
+
+                    if (reservationDateTime != null) {
+                        printReceipt(selectedTable, memberID, amountPaid, reservationDateTime); // เรียกใบเสร็จโดยใช้เวลาที่จองจริง
+                    } else {
+                        System.out.println("ไม่พบเวลาจองสำหรับโต๊ะนี้");
+                    }
+                } else {
+                    System.out.println("ไม่พบโต๊ะหมายเลข " + tableID);
+                }
+                break;
+
+            case 5:
+                System.out.println("ออกจากระบบ.");
+                break;
+
+            default:
+                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+
+        }
+    }
+
+    // -----------------------------table---------------------->
 
     /*
      * ==============================================================

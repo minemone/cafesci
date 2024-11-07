@@ -55,8 +55,7 @@ public class Manager extends Person {
 
     // Method อัปเดตการสั่งเครื่องดื่ม
     public void updateDrinkOrder(int orderID, int drinkID, String newDetails) {
-        System.out
-                .println("Order ID " + orderID + " with Drink ID " + drinkID + " updated with details: " + newDetails);
+        System.out.println("Order ID " + orderID + " with Drink ID " + drinkID + " updated with details: " + newDetails);
     }
 
     // Method ยกเลิกคำสั่งซื้อเครื่องดื่ม

@@ -43,6 +43,24 @@ public class Cart {
         return preparationTypes;
     }
 
+    public void applyDiscount(Drink selectedDrink, double discountPercentage) {
+        for (int i = 0; i < drinks.size(); i++) {
+            Drink drink = drinks.get(i);
+            int quantity = quantities.get(i);
+    
+            // ตรวจสอบว่าเป็นเครื่องดื่มที่ตรงกับโปรโมชั่น และจำนวนมากกว่า 1 แก้ว
+            if (drink.equals(selectedDrink) && quantity >= 2) {
+                // คำนวณส่วนลดเฉพาะแก้วที่สอง
+                double discountForSecondCup = drink.getPrice() * discountPercentage;
+                totalPrice -= discountForSecondCup;  // ปรับลดราคาจากราคารวม
+    
+                System.out.println("โปรโมชั่นถูกนำไปใช้กับ " + selectedDrink.getName() + " ส่วนลด " + (discountPercentage * 100) + "% สำหรับแก้วที่ 2");
+                break;  // ออกจากลูปหลังใช้โปรโมชั่น
+            }
+        }
+    }
+    
+
 
     // แสดงตะกร้าพร้อมจำนวนสินค้า
     public void displayCart() {

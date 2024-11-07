@@ -1,24 +1,40 @@
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Menu {
-    // Fields
-    // private List<Menu> menuItems;
     private List<Drink> drinks;
     private List<Topping> toppings;
     private List<Sweetness> sweetnessLevels;
-    // private List<DrinkType> drinktypes;
     private List<PreparationType> PreparationTypes;
+    private String promotion = "";
+    private int promotionDuration = 0;
 
     // Constructor
     public Menu() {
-        // this.menuItems = new ArrayList<>();
         this.drinks = new ArrayList<>();
         this.PreparationTypes = new ArrayList<>();
         this.toppings = new ArrayList<>();
         this.sweetnessLevels = new ArrayList<>();
     }
+
+   public void setPromotion(String promotion, int duration) {
+        this.promotion = promotion;
+        this.promotionDuration = duration;
+    }
+
+    public String getPromotion() {
+        return promotion;
+    }
+
+    public int getPromotionDuration() {
+        return promotionDuration;
+    }
+
+
+    
 
     public void displayMenudrink() {
         System.out.println("\n===== Menu =====\n");

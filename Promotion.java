@@ -1,33 +1,78 @@
+import java.util.Calendar;
 import java.util.Date;
 
 public class Promotion {
-    private String promotionName;
-    private double discountRate;
-    private Date validUntil;
+    private int promotionId;               // รหัสโปรโมชัน
+    private String promotionName;          // ชื่อโปรโมชัน
+    private PreparationType preparationType;              // ประเภทของเครื่องดื่มจาก Drink
+    private String selectPromotion;        // เลือกโปรโมชัน
+    private Date promotionPeriod;          // วันสิ้นสุดโปรโมชัน
+    private int sales;                     // ยอดขายจาก Drink
 
-    // Constructor
-    public Promotion(String promotionName, double discountRate, Date validUntil) {
+    // คอนสตรัคเตอร์ที่ใช้ Drink และกำหนดระยะเวลาเป็นจำนวนวัน
+    public Promotion(int promotionId, String promotionName, String selectPromotion, Drink drink, int promotionPeriodDays) {
+        this.promotionId = promotionId; // กำหนดรหัสโปรโมชัน
+        this.promotionName = promotionName; // ชื่อโปรโมชัน
+        this.selectPromotion = selectPromotion; // โปรโมชันที่เลือก
+        this.preparationType = drink.getPreparationType(); // ประเภทการเตรียมจาก Drink
+        this.sales = drink.getSales(); // ยอดขายของเครื่องดื่ม
+        this.promotionPeriod = calculateEndDate(promotionPeriodDays); // คำนวณวันสิ้นสุดโปรโมชัน
+    }
+
+    // Method คำนวณวันสิ้นสุดโปรโมชันจากจำนวนวัน
+    private Date calculateEndDate(int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        return calendar.getTime();
+    }
+
+    // Method แก้ไขโปรโมชัน
+    public void updatePromotion(String newPromotionName, String newSelectPromotion, Drink drink, int newPromotionPeriodDays) {
+        this.promotionName = newPromotionName;
+        this.selectPromotion = newSelectPromotion;
+        this.preparationType = drink.getPreparationType();
+        this.sales = drink.getSales();
+        this.promotionPeriod = calculateEndDate(newPromotionPeriodDays);
+    }
+
+    // Getter และ Setter สำหรับฟิลด์ต่าง ๆ
+    public String getPromotionName() {
+        return promotionName;
+    }
+
+    public void setPromotionName(String promotionName) {
         this.promotionName = promotionName;
-        this.discountRate = discountRate;
-        this.validUntil = validUntil;
     }
 
-    // Method to apply promotion
-    public double applyPromotion(double originalPrice) {
-        if (new Date().before(validUntil)) {
-            double discountedPrice = originalPrice * (1 - discountRate / 100);
-            System.out.println("Promotion applied: " + promotionName);
-            return discountedPrice;
-        } else {
-            System.out.println("Promotion expired.");
-            return originalPrice;
-        }
+    public PreparationType getPreparationType() {
+        return preparationType;
     }
 
-    // Method to display promotion details
-    public void displayPromotion() {
-        System.out.println("Promotion: " + promotionName);
-        System.out.println("Discount: " + discountRate + "%");
-        System.out.println("Valid Until: " + validUntil);
+    public void setPreparationType(PreparationType preparationType) {
+        this.preparationType = preparationType;
+    }
+
+    public String getSelectPromotion() {
+        return selectPromotion;
+    }
+
+    public void setSelectPromotion(String selectPromotion) {
+        this.selectPromotion = selectPromotion;
+    }
+
+    public Date getPromotionPeriod() {
+        return promotionPeriod;
+    }
+
+    public void setPromotionPeriodDays(int days) {
+        this.promotionPeriod = calculateEndDate(days);
+    }
+
+    public int getSales() {
+        return sales;
+    }
+
+    public void setSales(int sales) {
+        this.sales = sales;
     }
 }
