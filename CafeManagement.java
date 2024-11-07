@@ -1,8 +1,8 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class CafeManagement {
 
@@ -324,11 +324,8 @@ public class CafeManagement {
             }
 
             // เลือกประเภทเครื่องดื่ม
-            System.out.print("เลือกประเภทเครื่องดื่มหรือไม่? (yes/no): ");
-            String addPreparationType = scanner.nextLine();
-            if (addPreparationType.equalsIgnoreCase("yes")) {
-                menu.displayPreparationType();
-                System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
+            menu.displayPreparationType();
+            System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
                 if (!scanner.hasNextInt()) {
                     System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
                     scanner.next();
@@ -343,7 +340,7 @@ public class CafeManagement {
                 } else {
                     System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
                 }
-            }
+            
 
             // เลือกจำนวนแก้ว
             System.out.print("กรุณาระบุจำนวนแก้วที่ต้องการ: ");
