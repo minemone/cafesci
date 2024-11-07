@@ -6,6 +6,7 @@ public class Cafetable {
     private String status;
     private double tablePrice;
     private LocalDateTime reservationDateTime; // ฟิลด์สำหรับเก็บเวลาที่จอง
+    private String memberID; // เพิ่มฟิลด์สำหรับเก็บรหัสสมาชิก
 
     // Constructor สำหรับสร้างโต๊ะพร้อมข้อมูลพื้นฐาน
     public Cafetable(int tableID, String tableName, double tablePrice) {
@@ -34,6 +35,12 @@ public class Cafetable {
             System.out.println(tableName + " ไม่สามารถจองได้.");
             return false; // คืนค่า false ถ้าจองไม่สำเร็จ
         }
+    } public String getMemberID() {
+        return memberID;
+    }
+
+    public void setMemberID(String memberID) {
+        this.memberID = memberID;
     }
 
     // Getter สำหรับ tableID

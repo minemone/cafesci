@@ -1035,6 +1035,7 @@ public void displayAllTables() {
 
             if (reservationDateTime != null) {
                 table.setReservationDateTime(reservationDateTime); // ตั้งค่าเวลาจองให้กับโต๊ะ
+                table.setMemberID(memberID); // ตั้งค่ารหัสสมาชิกให้กับโต๊ะที่จอง
                 calculateBill(table, memberID); // แสดงหน้าคิดเงินหลังจากการจองโต๊ะ
                 found = true;
             } else {
@@ -1138,10 +1139,10 @@ public void processPayment(Cafetable table, String memberID, LocalDateTime reser
     }
 
     System.out.println("รายการสินค้า");
-    System.out.println("1   โต๊ะ:" + table.getTableName() + "           " + String.format("%.2f", table.getTablePrice()) + " บาท");
+    System.out.println("1   :   " + table.getTableName() + "           " + String.format("%.2f", table.getTablePrice()) + " บาท");
     System.out.println("----------------------------");
     System.out.println("ยอดสุทธิ 1 โต๊ะ       " + String.format("%.2f", table.getTablePrice()) + " บาท");
-    System.out.println("เงินโอน               " + String.format("%.2f", table.getTablePrice()) + " บาท");
+    System.out.println("ชำระเงิน               " + String.format("%.2f", table.getTablePrice()) + " บาท");
     System.out.println("เงินทอน              0.00 บาท"); 
     System.out.println("----------------------------");
     System.out.println("\n**หากท่านไม่มาถึงภายใน 15 นาที ทางร้านขอสงวนสิทธิในการปล่อยโต๊ะให้กับลูกค้าท่านอื่น**");
@@ -1220,13 +1221,16 @@ private void addjustOrreciept() {
             }
         
             if (selectedTable != null) {
-                double amountPaid = selectedTable.getTablePrice();
+                    System.out.print("กรุณาใส่รหัสสมาชิก: ");
+                    String memberID = selectedTable.getMemberID(); // ดึงรหัสสมาชิกจากโต๊ะที่จอง
+                    double amountPaid = selectedTable.getTablePrice();
+                    
                 
                 // ดึงเวลาที่จองโต๊ะจาก `selectedTable`
                 LocalDateTime reservationDateTime = selectedTable.getReservationDateTime(); // สมมติว่ามี getter นี้ใน Cafetable
                 
                 if (reservationDateTime != null) {
-                    printReceipt(selectedTable, null, amountPaid, reservationDateTime); // เรียกใบเสร็จโดยใช้เวลาที่จองจริง
+                    printReceipt(selectedTable, memberID, amountPaid, reservationDateTime); // เรียกใบเสร็จโดยใช้เวลาที่จองจริง
                 } else {
                     System.out.println("ไม่พบเวลาจองสำหรับโต๊ะนี้");
                 }
