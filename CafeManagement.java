@@ -1064,7 +1064,7 @@ public void displayAllTables() {
     }
 
     // Method สำหรับขั้นตอนการชำระเงิน
-    public void processPayment(Cafetable table,String memberID) {
+    public void processPayment(Cafetable table,String memberID ) {
         double amount = table.getTablePrice();
         System.out.println("\nเลือกวิธีการชำระเงิน:");
         System.out.println("1. QR code");
@@ -1075,7 +1075,7 @@ public void displayAllTables() {
 
         if (paymentMethod == 1) {
             System.out.println("คุณเลือกชำระด้วย QR Code ขอบคุณที่ใช้บริการ!");
-            printReceipt(table, memberID,amount); // แสดงใบเสร็จ
+            printReceipt(table, memberID,amount ); // แสดงใบเสร็จ
             // System.out.println(table.getTableName() + " สั่งจองแล้ว.");
 
             table.setStatus("รออนุมัติ");
@@ -1117,7 +1117,7 @@ public void displayAllTables() {
     }
 
    // Method แสดงใบเสร็จหลังจากการชำระเงิน
-   public void printReceipt(Cafetable table, String memberID, double amountPaid) {
+   public void printReceipt(Cafetable table, String memberID, double amountPaid ) {
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm น.");
     LocalDateTime currentDateTime = LocalDateTime.now();
 
@@ -1126,7 +1126,7 @@ public void displayAllTables() {
     System.out.println("รหัสสมาชิก: " + memberID); // ตัวอย่าง รหัสสมาชิก สามารถเพิ่มเพื่อให้ผู้ใช้ใส่ได้
     System.out.println(currentDateTime.format(dateFormatter));
     System.out.println("----------------------------");
-    System.out.println("รายการสินค้า");
+    // System.out.println("เวลาที่จอง: " + reservationDateTime.format(DateTimeFormatter.ofPattern("HH:mm")));    System.out.println("รายการสินค้า");
     System.out.println("1   โต๊ะ:" + table.getTableName() + "           "
             + String.format("%.2f", table.getTablePrice()) + " บาท");
     System.out.println("----------------------------");
@@ -1136,6 +1136,7 @@ public void displayAllTables() {
     System.out.println("----------------------------");
     System.out.println("\n**หากท่านไม่มาถึงภายใน 15 นาที ทางร้านขอสงวนสิทธิในการปล่อยโต๊ะให้กับลูกค้าท่านอื่น**");
     System.out.println("============================");
+     
 }
 //--------------------------------ปรับสถานโต้ะ--------------------------->
 // เมธอดใน CafeManagement สำหรับการปรับสถานะโต๊ะ
