@@ -1,8 +1,11 @@
+import java.time.LocalDateTime;
+
 public class Cafetable {
     private int tableID;
     private String tableName;
     private String status;
     private double tablePrice;
+    private LocalDateTime reservationDateTime; // ฟิลด์สำหรับเก็บเวลาที่จอง
 
     // Constructor สำหรับสร้างโต๊ะพร้อมข้อมูลพื้นฐาน
     public Cafetable(int tableID, String tableName, double tablePrice) {
@@ -10,6 +13,15 @@ public class Cafetable {
         this.tableName = tableName;
         this.status = "ว่าง"; // กำหนดสถานะเริ่มต้นเป็น "ว่าง"
         this.tablePrice = tablePrice; // กำหนดราคาของโต๊ะตามที่กำหนด
+    }
+
+    // Getter และ Setter สำหรับ reservationDateTime
+    public LocalDateTime getReservationDateTime() {
+        return reservationDateTime;
+    }
+
+    public void setReservationDateTime(LocalDateTime reservationDateTime) {
+        this.reservationDateTime = reservationDateTime;
     }
 
     // Method จองโต๊ะ และคืนค่า boolean เพื่อบอกว่าจองสำเร็จหรือไม่
@@ -24,22 +36,27 @@ public class Cafetable {
         }
     }
 
+    // Getter สำหรับ tableID
     public int getTableID() {
         return tableID;
     }
 
+    // Getter สำหรับ tableName
     public String getTableName() {
         return tableName;
     }
 
+    // Getter สำหรับ status
     public String getStatus() {
         return status;
     }
 
+    // Getter สำหรับ tablePrice
     public double getTablePrice() {
         return tablePrice;
     }
-      // สร้างเมธอด setStatus เพื่อปรับปรุงสถานะ
+
+    // Setter สำหรับ status
     public void setStatus(String status) {
         this.status = status;
     }

@@ -797,7 +797,7 @@ public class CafeManagement {
             break;
             case 3:
             //ปรับสถานะโต๊ะหรือใบเสร็จจองโต๊ะ
-            adjustTableStatus(); // เรียกใช้เมธอดสำหรับปรับสถานะโต๊ะ
+            addjustOrreciept(); // เรียกใช้เมธอดสำหรับปรับสถานะโต๊ะ
                 break;
             case 4:
                 switchRole();
@@ -1014,25 +1014,32 @@ public void displayAllTables() {
       
 
         // เรียกเมธอด processPayment เพื่อดำเนินการชำระเงิน
-        processPayment(table,memberID);    }
+        processPayment(table,memberID, null);    }
 
 
  // Method สำหรับการจองโต๊ะโดยรับหมายเลขจากผู้ใช้
  public void reserveTableByInput() {
     displayAllTables(); // แสดงโต๊ะทั้งหมดก่อน
-    System.out.print("กรุณาใส่โต๊ะที่ต้องการจอง (ID: 1-6): ");
+    System.out.print("กรุณาใส่โต๊ะที่ต้องการจอง (ID: 1–6): ");
     int tableID = scanner.nextInt();
-    
+
     System.out.print("กรุณาใส่รหัสสมาชิก: ");
-    String memberID = scanner.next()+scanner.nextLine(); // รับรหัสสมาชิก
+    String memberID = scanner.next() + scanner.nextLine(); // รับรหัสสมาชิก
 
     // ค้นหาโต๊ะตามหมายเลขที่ผู้ใช้กรอก
     boolean found = false;
     for (Cafetable table : tables) {
         if (table.getTableID() == tableID && table.getStatus().equals("ว่าง")) {
-            reserveTableWithDetails(table,memberID); // รับข้อมูลเพิ่มเติมและทำการจอง
-            calculateBill(table,memberID); // แสดงหน้าคิดเงินหลังจากการจองโต๊ะ
-            found = true;
+            // เรียกใช้ reserveTableWithDetails และรับค่ากลับของ reservationDateTime
+            LocalDateTime reservationDateTime = reserveTableWithDetails(table, memberID);
+
+            if (reservationDateTime != null) {
+                table.setReservationDateTime(reservationDateTime); // ตั้งค่าเวลาจองให้กับโต๊ะ
+                calculateBill(table, memberID); // แสดงหน้าคิดเงินหลังจากการจองโต๊ะ
+                found = true;
+            } else {
+                System.out.println("เวลาจองไม่ถูกต้อง กรุณาลองใหม่.");
+            }
             break;
         }
     }
@@ -1040,104 +1047,109 @@ public void displayAllTables() {
     if (!found) {
         System.out.println("ไม่พบโต๊ะหมายเลข " + tableID + " หรือโต๊ะไม่ว่าง.");
     }
+
+
+
+
+    
 }
-  // Method สำหรับใส่รหัสสมาชิกและเวลาในการจอง (เฉพาะชั่วโมงและนาที)
-    public void reserveTableWithDetails(Cafetable table,String memberID) {
+  // แก้ไขใน reserveTableWithDetails เพื่อส่งค่า reservationDateTime กลับไป
+  public LocalDateTime reserveTableWithDetails(Cafetable table, String memberID) {
+    // รับเฉพาะชั่วโมงและนาที
+    System.out.print("กรุณาใส่เวลาจอง (เช่น 12:30) : ");
+    String timeInput = scanner.next() + scanner.nextLine();
+
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    try {
+        LocalTime reservationTime = LocalTime.parse(timeInput, timeFormatter);
+        LocalDateTime reservationDateTime = LocalDateTime.now().withHour(reservationTime.getHour())
+                .withMinute(reservationTime.getMinute());
         
-        // รับเฉพาะชั่วโมงและนาที
-        System.out.print("กรุณาใส่เวลาจอง (เช่น 12:30) : ");
-        String timeInput = scanner.next() + scanner.nextLine();
-
-        // แปลงเป็น LocalTime และรวมกับวันที่ปัจจุบัน
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        try {
-            LocalTime reservationTime = LocalTime.parse(timeInput, timeFormatter);
-            LocalDateTime reservationDateTime = LocalDateTime.now().withHour(reservationTime.getHour())
-                    .withMinute(reservationTime.getMinute());
-                    
-                    // table.reserveTable();
-                    // System.out.println(table.getTableName() + " ถูกจองแล้วโดยรหัสสมาชิก: " + memberID + " เวลา: "
-                    // + reservationDateTime.format(DateTimeFormatter.ofPattern("HH:mm")));
-        } catch (Exception e) {
-            System.out.println("รูปแบบเวลาไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
-        }
+        return reservationDateTime; // ส่งค่า reservationDateTime กลับไป
+    } catch (Exception e) {
+        System.out.println("รูปแบบเวลาไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
     }
+    return null;
 
-    // Method สำหรับขั้นตอนการชำระเงิน
-    public void processPayment(Cafetable table,String memberID ) {
-        double amount = table.getTablePrice();
-        System.out.println("\nเลือกวิธีการชำระเงิน:");
-        System.out.println("1. QR code");
-        System.out.println("2. ชำระด้วยบัตรเครดิต");
-        System.out.print("กรุณาเลือกวิธีการชำระเงิน: ");
-        int paymentMethod = scanner.nextInt();
-        scanner.nextLine(); // เคลียร์ newline
 
-        if (paymentMethod == 1) {
-            System.out.println("คุณเลือกชำระด้วย QR Code ขอบคุณที่ใช้บริการ!");
-            printReceipt(table, memberID,amount ); // แสดงใบเสร็จ
-            // System.out.println(table.getTableName() + " สั่งจองแล้ว.");
+}
 
+
+   // ปรับปรุง processPayment ให้รับ reservationDateTime เป็นพารามิเตอร์
+public void processPayment(Cafetable table, String memberID, LocalDateTime reservationDateTime) {
+    double amount = table.getTablePrice();
+    System.out.println("\nเลือกวิธีการชำระเงิน:");
+    System.out.println("1. QR code");
+    System.out.println("2. ชำระด้วยบัตรเครดิต");
+    System.out.print("กรุณาเลือกวิธีการชำระเงิน: ");
+    int paymentMethod = scanner.nextInt();
+    scanner.nextLine(); // เคลียร์ newline
+
+    if (paymentMethod == 1) {
+        System.out.println("คุณเลือกชำระด้วย QR Code ขอบคุณที่ใช้บริการ!");
+        printReceipt(table, memberID, amount, reservationDateTime); // ส่ง reservationDateTime ให้ printReceipt
+        table.setStatus("รออนุมัติ");
+        displayAllTables();
+        switchRole();
+    } else if (paymentMethod == 2) {
+        System.out.println("กรุณากรอกรายละเอียดบัตรเครดิต..."); 
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("กรุณาใส่หมายเลขบัตรเครดิต: ");
+        String cardNumber = scanner.nextLine();
+        System.out.print("ชื่อผู้ถือบัตร: ");
+        String cardHolderName = scanner.nextLine();
+        System.out.print("วันหมดอายุ (MM/YY): ");
+        String expirationDate = scanner.nextLine();
+        System.out.print("CVV: ");
+        String cvv = scanner.nextLine();
+    
+        CreditCard creditCard = new CreditCard(cardNumber, cardHolderName, expirationDate, cvv);
+        if (creditCard.validateCard()) {
+            System.out.println("การชำระเงินผ่านบัตรเครดิตเสร็จสมบูรณ์!");
+            printReceipt(table, memberID, amount, reservationDateTime); // ส่ง reservationDateTime ให้ printReceipt
             table.setStatus("รออนุมัติ");
             displayAllTables();
             switchRole();
-                        // แสดงสถานะโต๊ะทั้งหมดหลังจากชำระเงินด้วยเงินสด
-        } else if (paymentMethod == 2) {
-            System.out.println("กรุณากรอกรายละเอียดบัตรเครดิต..."); 
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("กรุณาใส่หมายเลขบัตรเครดิต: ");
-            String cardNumber = scanner.nextLine();
-            System.out.print("ชื่อผู้ถือบัตร: ");
-            String cardHolderName = scanner.nextLine();
-            System.out.print("วันหมดอายุ (MM/YY): ");
-            String expirationDate = scanner.nextLine();
-            System.out.print("CVV: ");
-            String cvv = scanner.nextLine();
-        
-            CreditCard creditCard = new CreditCard(cardNumber, cardHolderName, expirationDate, cvv);
-            if (creditCard.validateCard()) {
-                // สร้างออบเจ็กต์ Payment และเรียก processPayment() เพียงครั้งเดียว
-                // Payment payment = new Payment(amount, "Credit Card", null);
-                // payment.processPayment(); // เรียก processPayment ของ Payment
-                
-                System.out.println("การชำระเงินผ่านบัตรเครดิตเสร็จสมบูรณ์!");
-                printReceipt(table, memberID, amount); // แสดงใบเสร็จ
-                table.setStatus("รออนุมัติ"); // ตั้งสถานะเป็น "รออนุมัติ"
-                displayAllTables(); // แสดงสถานะโต๊ะทั้งหมด
-        
-                switchRole(); // สลับบทบาทหลังจากทำงานเสร็จ
-            } else {
-                System.out.println("ข้อมูลบัตรเครดิตไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
-            }
         } else {
-            System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
-            processPayment(table, memberID); // ให้ผู้ใช้ลองเลือกใหม่
+            System.out.println("ข้อมูลบัตรเครดิตไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
         }
-        
+    } else {
+        System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+        processPayment(table, memberID, reservationDateTime); // ส่ง reservationDateTime อีกครั้ง
     }
+}
+
 
    // Method แสดงใบเสร็จหลังจากการชำระเงิน
-   public void printReceipt(Cafetable table, String memberID, double amountPaid ) {
+   public void printReceipt(Cafetable table, String memberID, double amountPaid, LocalDateTime reservationDateTime) {
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm น.");
     LocalDateTime currentDateTime = LocalDateTime.now();
 
     System.out.println("\n========= Cafe Sci =========");
     System.out.println("เลขที่ใบเสร็จ: #" + (int) (Math.random() * 1000));
-    System.out.println("รหัสสมาชิก: " + memberID); // ตัวอย่าง รหัสสมาชิก สามารถเพิ่มเพื่อให้ผู้ใช้ใส่ได้
+    System.out.println("รหัสสมาชิก: " + memberID); 
     System.out.println(currentDateTime.format(dateFormatter));
     System.out.println("----------------------------");
-    // System.out.println("เวลาที่จอง: " + reservationDateTime.format(DateTimeFormatter.ofPattern("HH:mm")));    System.out.println("รายการสินค้า");
-    System.out.println("1   โต๊ะ:" + table.getTableName() + "           "
-            + String.format("%.2f", table.getTablePrice()) + " บาท");
+    
+    if (reservationDateTime != null) {
+        System.out.println("เวลาที่จอง: " + reservationDateTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+    } else {
+        System.out.println("เวลาที่จอง: ไม่ระบุ");
+    }
+
+    System.out.println("รายการสินค้า");
+    System.out.println("1   โต๊ะ:" + table.getTableName() + "           " + String.format("%.2f", table.getTablePrice()) + " บาท");
     System.out.println("----------------------------");
     System.out.println("ยอดสุทธิ 1 โต๊ะ       " + String.format("%.2f", table.getTablePrice()) + " บาท");
     System.out.println("เงินโอน               " + String.format("%.2f", table.getTablePrice()) + " บาท");
-    System.out.println("เงินทอน              0.00 บาท"); // หากต้องการเพิ่มจำนวนเงินที่เหลือหรือเงินทอน
+    System.out.println("เงินทอน              0.00 บาท"); 
     System.out.println("----------------------------");
     System.out.println("\n**หากท่านไม่มาถึงภายใน 15 นาที ทางร้านขอสงวนสิทธิในการปล่อยโต๊ะให้กับลูกค้าท่านอื่น**");
     System.out.println("============================");
-     
 }
+
+
+
 //--------------------------------ปรับสถานโต้ะ--------------------------->
 // เมธอดใน CafeManagement สำหรับการปรับสถานะโต๊ะ
 public void adjustTableStatus() {
@@ -1180,6 +1192,57 @@ public void adjustTableStatus() {
     System.out.println("ไม่พบโต๊ะหมายเลข " + tableID);
     displayAllTables();
     displayManagerOptions();
+}
+
+private void addjustOrreciept() {
+    System.out.println("\nปรับสถานะการสั่งซื้อหรือดูใบเสร็จ");
+    System.out.println("1. ปรับสถานะโต๊ะ");
+    System.out.println("2. ดูใบเสร็จจองโต๊ะ");
+    System.out.print("กรุณาเลือกหมายเลข :");
+    int choiceMa = getUserInput();
+    
+    switch (choiceMa) {
+        case 1:
+            adjustTableStatus(); // เรียกใช้เมธอดสำหรับปรับสถานะโต๊ะ
+            break;
+            case 2:
+            // ตรวจสอบข้อมูลโต๊ะเพื่อแสดงใบเสร็จ
+            System.out.print("กรุณาใส่หมายเลขโต๊ะที่ต้องการดูใบเสร็จ: ");
+            int tableID = getUserInput();
+            Cafetable selectedTable = null;
+            
+            // ค้นหาโต๊ะที่ตรงกับ tableID
+            for (Cafetable table : tables) {
+                if (table.getTableID() == tableID) {
+                    selectedTable = table;
+                    break;
+                }
+            }
+        
+            if (selectedTable != null) {
+                double amountPaid = selectedTable.getTablePrice();
+                
+                // ดึงเวลาที่จองโต๊ะจาก `selectedTable`
+                LocalDateTime reservationDateTime = selectedTable.getReservationDateTime(); // สมมติว่ามี getter นี้ใน Cafetable
+                
+                if (reservationDateTime != null) {
+                    printReceipt(selectedTable, null, amountPaid, reservationDateTime); // เรียกใบเสร็จโดยใช้เวลาที่จองจริง
+                } else {
+                    System.out.println("ไม่พบเวลาจองสำหรับโต๊ะนี้");
+                }
+            } else {
+                System.out.println("ไม่พบโต๊ะหมายเลข " + tableID);
+            }
+            break;
+        
+        case 5:
+            System.out.println("ออกจากระบบ.");
+            break;
+        
+        default:
+            System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+        
+        }
 }
 
 //-----------------------------table---------------------->
