@@ -52,7 +52,6 @@ public class Payment {
                 System.out.println("ชำระเงินผ่าน QR Code...");
             } else if (method.equalsIgnoreCase("Credit Card")) {
                 System.out.println("กรุณาใส่ข้อมูลบัตรเครดิต:");
-                scanner.nextLine(); // Clear newline
                 System.out.print("หมายเลขบัตร: ");
                 String cardNumber = scanner.nextLine();
                 System.out.print("ชื่อผู้ถือบัตร: ");
