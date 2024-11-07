@@ -73,13 +73,13 @@ public class Receipt {
     
             String displayName = drink.getName();
             if (preparationType != null) {
-                displayName += " (" + preparationType.getPrepName() + ")";
+                displayName += "(" + preparationType.getPrepName() + ")";
             }
             if (topping != null) {
                 displayName += " + " + topping.getToppingName();
             }
             if (sweetness != null) {
-                displayName += " (หวาน: " + sweetness.getSweetnessName() + ")";
+                displayName += " (" + sweetness.getSweetnessName() + ")";
             }
     
             System.out.printf("%-4d %-30s %10.2f บาท\n", quantity, displayName, totalItemPrice);
