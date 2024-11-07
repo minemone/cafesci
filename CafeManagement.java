@@ -1,4 +1,6 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Scanner;
 public class CafeManagement {
 
     private List<PreOrder> preOrders = new ArrayList<>();
+    private List<Order> completedOrders = new ArrayList<>();
     private Menu menu;
     private Cart cart;
     private Payment paymentSystem;
@@ -74,13 +77,18 @@ public class CafeManagement {
         switchRole();
         boolean running = true;
         while (running) {
+            // ตรวจสอบว่า currentRole เป็น null หรือไม่
+            if (currentRole == null) {
+                switchRole();
+                continue; // ข้ามส่วนที่เหลือของลูปไปเลือกบทบาทใหม่
+            }
             switch (currentRole) {
                 case MANAGER:
                     displayManagerOptions();
                     int managerChoice = getUserInput();
                     handleManagerOptions(managerChoice);
                     if (managerChoice == 0) { // ออกจากระบบ
-                        running = false;
+                        currentRole = null;
                     }
                     break;
                 case CUSTOMER:
@@ -88,7 +96,7 @@ public class CafeManagement {
                     int customerChoice = getUserInput();
                     handleCustomerOptions(customerChoice);
                     if (customerChoice == 0) { // ออกจากระบบ
-                        running = false;
+                        currentRole = null;
                     }
                     break;
                 case RIDER:
@@ -96,7 +104,7 @@ public class CafeManagement {
                     int riderChoice = getUserInput();
                     handleRiderOptions(riderChoice);
                     if (riderChoice == 0) { // ออกจากระบบ
-                        running = false;
+                        currentRole = null;
                     }
                     break;
                 default:
@@ -146,32 +154,10 @@ public class CafeManagement {
      * ==============================================================
      */
 
-     private void handleCustomerOptions(int choice) {
-        switch (choice) {
-            case 1:
-                System.out.println("ฟังก์ชันนี้เฉพาะสำหรับลูกค้าเท่านั้น.");
-                chooseOrderType();
-                break;
-            case 2:
-                System.out.println("ฟังก์ชันการจองโต๊ะยังไม่ถูกพัฒนา.");
-                break;
-            case 3:
-                trackOrderStatus();
-                break;
-            case 5:
-                switchRole();
-                break;
-            case 6:
-                System.out.println("ออกจากระบบ.");
-                break;
-            default:
-                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
-        }
-    }
 
     private void displayCustomerOptions() {
         System.out.println("\n== ตัวเลือกสำหรับลูกค้า ==");
-        
+
         System.out.println("1. สั่งเครื่องดื่ม");
         System.out.println("2. จองโต๊ะ");
         System.out.println("3. ติดตามสถานะคำสั่งซื้อ");
@@ -179,7 +165,6 @@ public class CafeManagement {
         System.out.println("\n0. ออกจากระบบ");
         System.out.print("กรุณาเลือกหมายเลข: ");
     }
-
 
     private void chooseOrderType() {
         System.out.println("\nคุณต้องการสั่งแบบไหน");
@@ -196,16 +181,14 @@ public class CafeManagement {
                 orderPreOrder();
                 break;
             case 0:
-            displayCustomerOptions();
+                displayCustomerOptions();
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
 
-
-
-    private void  orderImmediate() {
+    private void orderImmediate() {
         System.out.println("\nคุณต้องการรับรายการเครื่องดื่มแบบไหน");
         System.out.println("1.จัดส่ง");
         System.out.println("2.รับที่ร้าน");
@@ -217,13 +200,38 @@ public class CafeManagement {
                 System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
                 String deliveryAddress = scanner.nextLine();
                 System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
-            displayOrder();
+                displayOrder();
                 break;
             case 2:
-            displayOrder();
+                displayOrder();
                 break;
             case 0:
-            chooseOrderType();
+                chooseOrderType();
+                break;
+            default:
+                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+        }
+    }
+
+    private void PreorderImmediate() {
+        System.out.println("\nคุณต้องการรับรายการเครื่องดื่มแบบไหน");
+        System.out.println("1.จัดส่ง");
+        System.out.println("2.รับที่ร้าน");
+        System.out.println("\n0.ย้อนกลับ");
+        System.out.print("กรุณาเลือกหมายเลข: ");
+        int Options2choice = getUserInput();
+        switch (Options2choice) {
+            case 1:
+                System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
+                String deliveryAddress = scanner.nextLine();
+                System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
+                displayPreorder();
+                break;
+            case 2:
+                displayPreorder();
+                break;
+            case 0:
+                chooseOrderType();
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
@@ -238,7 +246,7 @@ public class CafeManagement {
      * ==============================================================
      */
 
-    private void displayOrder() { 
+    private void displayOrder() {
         System.out.println("\nเมนูการสั่งเครื่องดื่ม:");
         System.out.println("1. ดูเมนูน้ำ");
         System.out.println("2. สั่งรายการเครื่องดื่ม (เลือกน้ำ/ท็อปปิ้ง/ระดับความหวาน/ประเภทเครื่องดื่ม)");
@@ -261,7 +269,7 @@ public class CafeManagement {
                 proceedToPayment();
                 break;
             case 0:
-            orderImmediate();
+                orderImmediate();
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
@@ -308,45 +316,40 @@ public class CafeManagement {
             }
 
             // เลือกระดับความหวาน
-            System.out.print("เลือกระดับความหวานหรือไม่? (yes/no): ");
-            String addSweetness = scanner.nextLine();
-            if (addSweetness.equalsIgnoreCase("yes")) {
-                menu.displayMenusweetness();
-                System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int sweetnessNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedSweetness = menu.getSweetness(sweetnessNum);
-                if (selectedSweetness != null) {
-                    System.out
-                            .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ระดับความหวานไม่ถูกต้อง.");
-                }
+            menu.displayMenusweetness();
+            System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
+            if (!scanner.hasNextInt()) {
+                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                scanner.next();
+                return;
+            }
+            int sweetnessNum = scanner.nextInt();
+            scanner.nextLine();
+            selectedSweetness = menu.getSweetness(sweetnessNum);
+            if (selectedSweetness != null) {
+                System.out
+                        .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+            } else {
+                System.out.println("ระดับความหวานไม่ถูกต้อง.");
             }
 
             // เลือกประเภทเครื่องดื่ม
             menu.displayPreparationType();
             System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int preparationTypeNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedPreparationType = menu.getPreparationType(preparationTypeNum);
-                if (selectedPreparationType != null) {
-                    System.out.println(
-                            "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
-                }
-            
+            if (!scanner.hasNextInt()) {
+                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                scanner.next();
+                return;
+            }
+            int preparationTypeNum = scanner.nextInt();
+            scanner.nextLine();
+            selectedPreparationType = menu.getPreparationType(preparationTypeNum);
+            if (selectedPreparationType != null) {
+                System.out.println(
+                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+            } else {
+                System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
+            }
 
             // เลือกจำนวนแก้ว
             System.out.print("กรุณาระบุจำนวนแก้วที่ต้องการ: ");
@@ -365,10 +368,7 @@ public class CafeManagement {
         } else {
             System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
-        LocalDateTime pickupTime = choosePickupTime(); // เรียกฟังก์ชันเลือกเวลารับสินค้า
-        System.out.println(
-                "เวลารับสินค้าล่วงหน้า: " + pickupTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        displayPreorder();
+        displayOrder();
     }
 
     private void displayOrderMenu() {
@@ -403,7 +403,7 @@ public class CafeManagement {
                 displayOrder();
                 break;
             case 0:
-             displayOrder();
+                displayOrder();
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
@@ -429,12 +429,13 @@ public class CafeManagement {
                 System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
                 String deliveryAddress = scanner.nextLine();
                 System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
-                displayOrder();
+                displayPreorder();
                 break;
             case 2:
                 displayPreorder();
                 break;
             case 0:
+                chooseOrderType();
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
@@ -492,19 +493,22 @@ public class CafeManagement {
 
     private LocalDateTime inputCustomPickupTime() {
         LocalDateTime pickupTime = null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         while (pickupTime == null) {
-            System.out.print("กรุณาใส่วันที่และเวลา (รูปแบบ: yyyy-MM-dd HH:mm): ");
+            System.out.print("กรุณาใส่เวลารับสินค้า (รูปแบบ: HH:mm): ");
             String input = scanner.nextLine();
             try {
-                pickupTime = LocalDateTime.parse(input, formatter);
-                if (pickupTime.isBefore(LocalDateTime.now())) {
+                LocalTime time = LocalTime.parse(input, formatter);
+                LocalDateTime todayWithTime = LocalDateTime.of(LocalDate.now(), time);
+                if (todayWithTime.isBefore(LocalDateTime.now())) {
                     System.out.println("เวลาที่เลือกต้องอยู่ในอนาคต กรุณาลองใหม่.");
                     pickupTime = null;
+                } else {
+                    pickupTime = todayWithTime;
                 }
             } catch (Exception e) {
-                System.out.println("รูปแบบวันที่และเวลาไม่ถูกต้อง กรุณาลองใหม่.");
+                System.out.println("รูปแบบเวลาผิดพลาด กรุณาลองใหม่ (รูปแบบ: HH:mm).");
             }
         }
         return pickupTime;
@@ -541,42 +545,44 @@ public class CafeManagement {
                 displayDrinksByCategory(milkCategory);
                 displayPreorder();
                 break;
-            case 6:
-                // displayMainOptions1();
+            case 0:
+                displayPreorder();
+                break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
 
-    private void displayPreorder() { // เมนูสั่งน้ำ ดู สั่ง ตะกร้า จ่าย ออกจากระบบ
+    private void displayPreorder() {
         System.out.println("\nเมนูการสั่งเครื่องดื่ม:");
         System.out.println("1. ดูเมนูน้ำ");
         System.out.println("2. สั่งรายการเครื่องดื่ม (เลือกน้ำ/ท็อปปิ้ง/ระดับความหวาน/ประเภทเครื่องดื่ม)");
         System.out.println("3. ดูตะกร้าสินค้าที่สั่ง");
         System.out.println("4. ชำระเงิน (จ่ายแบบ QR และ บัตรเครดิต)");
-        System.out.println("5. ออกจากระบบ");
+        System.out.println("\n0. ออกจากระบบ");
         System.out.print("กรุณาเลือกหมายเลข: ");
         int subChoice = getUserInput();
         switch (subChoice) {
             case 1:
-            displayPreorder();
+                displayPreorder();
                 break;
             case 2:
-            addToCartPreorder();
+                addToCartPreorder();
                 break;
             case 3:
-            viewCart();
+                viewCart();
                 break;
             case 4:
-            proceedToPayment();
+                proceedToPayment();
                 break;
-            case 5:
-            System.out.println("กลับสู่หน้าหลัก");
+            case 0:
+                switchRole();
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
+
     private void addToCartPreorder() {
         System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
         if (!scanner.hasNextInt()) {
@@ -617,44 +623,42 @@ public class CafeManagement {
             }
 
             // เลือกระดับความหวาน
-            
-                menu.displayMenusweetness();
-                System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int sweetnessNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedSweetness = menu.getSweetness(sweetnessNum);
-                if (selectedSweetness != null) {
-                    System.out
-                            .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ระดับความหวานไม่ถูกต้อง.");
-                }
-            
+
+            menu.displayMenusweetness();
+            System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
+            if (!scanner.hasNextInt()) {
+                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                scanner.next();
+                return;
+            }
+            int sweetnessNum = scanner.nextInt();
+            scanner.nextLine();
+            selectedSweetness = menu.getSweetness(sweetnessNum);
+            if (selectedSweetness != null) {
+                System.out
+                        .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+            } else {
+                System.out.println("ระดับความหวานไม่ถูกต้อง.");
+            }
 
             // เลือกประเภทเครื่องดื่ม
-            
-                menu.displayPreparationType();
-                System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int preparationTypeNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedPreparationType = menu.getPreparationType(preparationTypeNum);
-                if (selectedPreparationType != null) {
-                    System.out.println(
-                            "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
-                }
-            
+
+            menu.displayPreparationType();
+            System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
+            if (!scanner.hasNextInt()) {
+                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                scanner.next();
+                return;
+            }
+            int preparationTypeNum = scanner.nextInt();
+            scanner.nextLine();
+            selectedPreparationType = menu.getPreparationType(preparationTypeNum);
+            if (selectedPreparationType != null) {
+                System.out.println(
+                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+            } else {
+                System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
+            }
 
             // เลือกจำนวนแก้ว
             System.out.print("กรุณาระบุจำนวนแก้วที่ต้องการ: ");
@@ -678,8 +682,6 @@ public class CafeManagement {
                 "เวลารับสินค้าล่วงหน้า: " + pickupTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         displayPreorder();
     }
-
-
 
     private void displayDrinksByCategory(DrinkCategory category) {
         System.out.println("\n=== " + category.getCategoryName() + " ===");
@@ -725,9 +727,10 @@ public class CafeManagement {
         paymentSystem = new Payment(totalAmount, paymentMethod, currentCustomer);
         paymentSystem.processPayment(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes);
 
+        completedOrders.add(order);
+
         cart.clearCart();
     }
-
 
     private int getUserInput() {
         while (!scanner.hasNextInt()) {
@@ -738,6 +741,60 @@ public class CafeManagement {
         scanner.nextLine();
         return input;
     }
+
+    private void handleCustomerOptions(int choice) {
+        switch (choice) {
+            case 1:
+                System.out.println("ฟังก์ชันนี้เฉพาะสำหรับลูกค้าเท่านั้น.");
+                chooseOrderType();
+                break;
+            case 2:
+                System.out.println("ฟังก์ชันการจองโต๊ะยังไม่ถูกพัฒนา.");
+                break;
+            case 3:
+                trackOrderStatus(); // เรียกใช้ฟังก์ชันติดตามสถานะคำสั่งซื้อ
+                break;
+            case 4:
+                trackDeliveryStatus(); // เรียกใช้ฟังก์ชันติดตามสถานะการจัดส่ง
+                break;
+            case 5:
+                switchRole();
+                break;
+            case 0:
+                switchRole();
+                System.out.println("ออกจากระบบ.");
+                break;
+            default:
+                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+        }
+    }
+
+    private void trackDeliveryStatus() {
+        if (currentCustomer != null && !cart.isEmpty()) {
+            // ตรวจสอบสถานะการจัดส่ง
+            Order order = paymentSystem.getOrder(); // แก้ไขให้สามารถเรียกคำสั่งซื้อปัจจุบันได้
+            if (order != null && order.getStatus().equals("กำลังจัดส่ง")) {
+                System.out.println("สถานะการจัดส่ง: กำลังจัดส่งไปยังที่อยู่ที่คุณระบุ");
+            } else {
+                System.out.println("ยังไม่มีการจัดส่งสำหรับคำสั่งซื้อนี้");
+            }
+        } else {
+            System.out.println("คุณยังไม่มีการจัดส่งที่กำลังดำเนินการ");
+        }
+    }
+
+
+    private void trackOrderStatus() {
+        if (completedOrders.isEmpty()) {
+            System.out.println("คุณยังไม่มีคำสั่งซื้อที่กำลังดำเนินการ");
+        } else {
+            Order latestOrder = completedOrders.get(completedOrders.size() - 1); // ใช้คำสั่งซื้อที่ล่าสุด
+            System.out.println("สถานะคำสั่งซื้อของคุณ: " + latestOrder.getStatus());
+        }
+    }
+    
+    
+    
     /*
      * ==============================================================
      * ==============================================================
@@ -747,7 +804,9 @@ public class CafeManagement {
      * 
      */
 
-     private void handleManagerOptions(int choice) {
+
+
+    private void handleManagerOptions(int choice) {
         // จัดการการทำงานสำหรับตัวเลือกของไรเดอร์
         if (choice == 5) {
             System.out.println("ออกจากระบบ.");
@@ -755,6 +814,7 @@ public class CafeManagement {
             System.out.println("กำลังดำเนินการฟังก์ชันของผู้จัดการ.");
         }
     }
+
     private void displayManagerOptions() {
         System.out.println("\nหน้าหลัก Manager");
         System.out.println("1. ขายรายการเครื่องดื่มและระบุโต๊ะ");
@@ -783,7 +843,8 @@ public class CafeManagement {
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
-     private void displayOrderMng() { 
+
+    private void displayOrderMng() {
         System.out.println("\nเมนูการสั่งเครื่องดื่ม:");
         System.out.println("1. ดูเมนูน้ำ");
         System.out.println("2. สั่งรายการเครื่องดื่ม (เลือกน้ำ/ท็อปปิ้ง/ระดับความหวาน/ประเภทเครื่องดื่ม)");
@@ -853,44 +914,42 @@ public class CafeManagement {
             }
 
             // เลือกระดับความหวาน
-           
-                menu.displayMenusweetness();
-                System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int sweetnessNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedSweetness = menu.getSweetness(sweetnessNum);
-                if (selectedSweetness != null) {
-                    System.out
-                            .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ระดับความหวานไม่ถูกต้อง.");
-                }
-            
+
+            menu.displayMenusweetness();
+            System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
+            if (!scanner.hasNextInt()) {
+                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                scanner.next();
+                return;
+            }
+            int sweetnessNum = scanner.nextInt();
+            scanner.nextLine();
+            selectedSweetness = menu.getSweetness(sweetnessNum);
+            if (selectedSweetness != null) {
+                System.out
+                        .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
+            } else {
+                System.out.println("ระดับความหวานไม่ถูกต้อง.");
+            }
 
             // เลือกประเภทเครื่องดื่ม
-           
-                menu.displayPreparationType();
-                System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int preparationTypeNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedPreparationType = menu.getPreparationType(preparationTypeNum);
-                if (selectedPreparationType != null) {
-                    System.out.println(
-                            "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
-                }
-            
+
+            menu.displayPreparationType();
+            System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
+            if (!scanner.hasNextInt()) {
+                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
+                scanner.next();
+                return;
+            }
+            int preparationTypeNum = scanner.nextInt();
+            scanner.nextLine();
+            selectedPreparationType = menu.getPreparationType(preparationTypeNum);
+            if (selectedPreparationType != null) {
+                System.out.println(
+                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+            } else {
+                System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
+            }
 
             // เลือกจำนวนแก้ว
             System.out.print("กรุณาระบุจำนวนแก้วที่ต้องการ: ");
@@ -954,15 +1013,6 @@ public class CafeManagement {
     }
 
 
-
-    private void trackOrderStatus() { // ยังไม่ได้ใช้
-        if (currentOrderStatus != null) {
-            currentOrderStatus.trackOrderStatus();
-        } else {
-            System.out.println("ยังไม่มีคำสั่งซื้อที่สามารถติดตามสถานะได้.");
-        }
-    }
-
     /*
      * ==============================================================
      * ==============================================================
@@ -981,13 +1031,13 @@ public class CafeManagement {
                 System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
                 String deliveryAddress = scanner.nextLine();
                 System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
-            displayOrder();
+                displayOrder();
                 break;
             case 2:
-            displayOrder();
+                displayOrder();
                 break;
             case 0:
-            chooseOrderType();
+                chooseOrderType();
                 break;
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
@@ -1002,8 +1052,6 @@ public class CafeManagement {
             System.out.println("กำลังดำเนินการฟังก์ชันของไรเดอร์.");
         }
     }
-
-    
 
     public static void main(String[] args) {
         CafeManagement cafeManagement = new CafeManagement();

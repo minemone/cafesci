@@ -2,14 +2,17 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Payment {
+    private static int paymentCounter = 1; // เพิ่มตัวนับการชำระเงินอัตโนมัติ
     private int paymentId;
     private double amount;
     private String method; // เช่น "QR", "Credit Card"
     private Order order;
     private Customer customer;
+    private double discount; // ฟิลด์ส่วนลดสำหรับการบันทึกส่วนลดทั้งหมดที่ใช้
 
     // Constructor
     public Payment(double amount, String method, Customer customer) {
+        this.paymentId = paymentCounter++;
         this.amount = amount;
         this.method = method;
         this.customer = customer;
@@ -27,17 +30,19 @@ public class Payment {
         return discount;
     }
 
+    // ฟังก์ชันสำหรับการชำระเงิน
     public void processPayment(Order order, List<Drink> drinks, List<Integer> quantities, List<Topping> toppings,
-            List<Sweetness> sweetnessLevels, List<PreparationType> preparationTypes) {
+                               List<Sweetness> sweetnessLevels, List<PreparationType> preparationTypes) {
         if (order != null) {
             Scanner scanner = new Scanner(System.in);
 
+            // ใช้พอยต์เป็นส่วนลด
             double availablePoints = order.getCustomer().getPoints();
             System.out.println("พอยต์ที่คุณมีอยู่: " + availablePoints);
             System.out.print("คุณต้องการใช้พอยต์เป็นส่วนลดหรือไม่? (yes/no): ");
             String usePoints = scanner.nextLine();
 
-            double discount = 0;
+            discount = 0; // กำหนดค่าเริ่มต้นให้กับส่วนลด
             if (usePoints.equalsIgnoreCase("yes")) {
                 System.out.print("กรุณาระบุจำนวนพอยต์ที่ต้องการใช้: ");
                 double pointsToUse = scanner.nextDouble();
@@ -50,21 +55,13 @@ public class Payment {
             // เลือกวิธีการชำระเงิน
             if (method.equalsIgnoreCase("QR")) {
                 System.out.println("ชำระเงินผ่าน QR Code...");
+                simulateQRPayment();
             } else if (method.equalsIgnoreCase("Credit Card")) {
-                System.out.println("กรุณาใส่ข้อมูลบัตรเครดิต:");
-                System.out.print("หมายเลขบัตร: ");
-                String cardNumber = scanner.nextLine();
-                System.out.print("ชื่อผู้ถือบัตร: ");
-                String cardHolderName = scanner.nextLine();
-                System.out.print("วันหมดอายุ (MM/YY): ");
-                String expirationDate = scanner.nextLine();
-                System.out.print("CVV: ");
-                String cvv = scanner.nextLine();
+                simulateCreditCardPayment(scanner);
             }
 
             // สร้างและพิมพ์ใบเสร็จ
-            Receipt receipt = new Receipt(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes,
-                    discount);
+            Receipt receipt = new Receipt(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes, discount);
             receipt.printReceipt();
 
             // เพิ่มพอยต์จากยอดการสั่งซื้อ
@@ -75,4 +72,48 @@ public class Payment {
         }
     }
 
+    // ฟังก์ชันจำลองการชำระเงินด้วย QR
+    private void simulateQRPayment() {
+        System.out.println("กรุณาสแกน QR Code เพื่อชำระเงิน...");
+        System.out.println("การชำระเงินผ่าน QR Code เสร็จสิ้น!");
+    }
+
+    // ฟังก์ชันจำลองการชำระเงินด้วยบัตรเครดิต
+    private void simulateCreditCardPayment(Scanner scanner) {
+        System.out.println("กรุณาใส่ข้อมูลบัตรเครดิต:");
+        System.out.print("หมายเลขบัตร: ");
+        String cardNumber = scanner.nextLine();
+        System.out.print("ชื่อผู้ถือบัตร: ");
+        String cardHolderName = scanner.nextLine();
+        System.out.print("วันหมดอายุ (MM/YY): ");
+        String expirationDate = scanner.nextLine();
+        System.out.print("CVV: ");
+        String cvv = scanner.nextLine();
+        System.out.println("การชำระเงินผ่านบัตรเครดิตเสร็จสิ้น!");
+    }
+
+    // Getters
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
 }
