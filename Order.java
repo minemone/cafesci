@@ -94,21 +94,34 @@ public class Order {
         System.out.println("สถานะคำสั่งซื้อเปลี่ยนเป็น: " + newStatus);
     }
 
-    // ฟังก์ชันใช้โปรโมชั่น
     public void applyPromotion(Promotion promotion) {
         if (promotion != null && !promotion.isPromotionExpired()) {
             this.promotionApplied = promotion;
-            // คำนวณส่วนลดตามประเภทของโปรโมชั่น
-            if (promotion.getSelectPromotion().equals("Buy 2, get 50% off")) {
-                this.discount = totalAmount * 0.5; // ตัวอย่างการคำนวณส่วนลด
-            } else if (promotion.getSelectPromotion().equals("Buy 3, get 30% off")) {
-                this.discount = totalAmount * 0.3;
+    
+            // ตรวจสอบประเภทโปรโมชั่นและคำนวณส่วนลด
+            String promotionType = promotion.getSelectPromotion();
+            
+            if ("Buy 2, get 50% off".equals(promotionType)) {
+                this.discount = totalAmount * 0.5; // ลดราคา 50%
+            } else if ("Buy 3, get 30% off".equals(promotionType)) {
+                this.discount = totalAmount * 0.3; // ลดราคา 30%
+            } else {
+                System.out.println("Unknown promotion type.");
             }
+            
             System.out.println("Promotion applied: " + promotion.getPromotionName());
         } else {
             System.out.println("Promotion is either invalid or expired.");
         }
     }
+    
+
+    // Method สำหรับคำนวณราคาหลังจากหักส่วนลด
+    public double getFinalAmount() {
+        return totalAmount - discount;
+    }
+
+    
 
     // ฟังก์ชันแสดงรายละเอียดคำสั่งซื้อ
     public void displayOrderDetails() {

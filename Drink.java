@@ -85,7 +85,7 @@ public class Drink {
         return salesCount;
     }
 
-    public void incrementSalesCount() {
-        salesCount++;
+    public void incrementSales(int quantity) {
+        salesCount += quantity; // เพิ่มยอดขายตามจำนวนที่สั่ง
     }
 }

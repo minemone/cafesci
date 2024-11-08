@@ -9,9 +9,9 @@ public class Manager extends Person {
 
     // Constructor
     public Manager(String personID, String name, String phoneNumber, Role role, String managerID, List<Drink> drinks) {
-        super(personID, name, role); // เรียก Constructor ของ Person และกำหนด Role
+        super(personID, name, role);
         this.managerID = managerID;
-        this.drinks = drinks;
+        this.drinks = (drinks != null) ? drinks : new ArrayList<>();
         this.activePromotions = new ArrayList<>();
     }
 
@@ -24,7 +24,7 @@ public class Manager extends Person {
         this.managerID = managerID;
     }
 
-    // Method ดึงเครื่องดื่มยอดขายสูงสุด 3 อันดับแรก
+    // Method for retrieving top 3 selling drinks
     public List<Drink> getTopSellingDrinks() {
         return drinks.stream()
                      .sorted((d1, d2) -> Integer.compare(d2.getSalesCount(), d1.getSalesCount()))
@@ -32,7 +32,7 @@ public class Manager extends Person {
                      .collect(Collectors.toList());
     }
 
-    // Method ดึงเครื่องดื่มยอดขายน้อยสุด 3 อันดับแรก
+    // Method for retrieving bottom 3 selling drinks
     public List<Drink> getLowestSellingDrinks() {
         return drinks.stream()
                      .sorted((d1, d2) -> Integer.compare(d1.getSalesCount(), d2.getSalesCount()))
@@ -40,32 +40,41 @@ public class Manager extends Person {
                      .collect(Collectors.toList());
     }
 
-    // Method สร้างโปรโมชั่นใหม่
-    public void createPromotion(List<Drink> topSelling, List<Drink> lowSelling, String promotionType, int duration) {
-        Promotion promotion = new Promotion(topSelling, lowSelling, promotionType, duration);
-        activePromotions.add(promotion); // เพิ่มโปรโมชั่นใหม่ไปยังรายการโปรโมชั่นที่ใช้งานอยู่
-        System.out.println("New promotion created: " + promotionType + " for duration: " + duration + " days");
-    }
+    // Method for creating a new promotion
+    
 
-    // Method แสดงโปรโมชั่นที่ใช้งานอยู่ทั้งหมด (ที่ยังไม่หมดอายุ)
+    // Method to get all active promotions
     public List<Promotion> getActivePromotions() {
         return activePromotions.stream()
-                               .filter(Promotion::isActive) // กรองเฉพาะโปรโมชั่นที่ยังไม่หมดอายุ
+                               .filter(Promotion::isActive)
                                .collect(Collectors.toList());
     }
 
-    // Method ลบโปรโมชั่น
+    // Method to delete a promotion
     public void deletePromotion(Promotion promotion) {
-        if (activePromotions.remove(promotion)) {
+        if (promotion != null && activePromotions.remove(promotion)) {
             System.out.println("Promotion removed: " + promotion.getPromotionType());
         } else {
             System.out.println("Promotion not found or already removed.");
         }
     }
 
-    // Method สำหรับตรวจสอบและลบโปรโมชั่นที่หมดอายุ
-    public void cleanExpiredPromotions() {
-        activePromotions.removeIf(promotion -> !promotion.isActive());
-        System.out.println("Expired promotions have been cleaned.");
+    // Method to clean expired promotions
+    public void createPromotion(List<Drink> topSelling, List<Drink> lowSelling, String promotionType,
+                             PreparationType preparationType, int durationDays) {
+    // ตรวจสอบว่ามีเครื่องดื่มเพียงพอในการสร้างโปรโมชั่น
+    if (topSelling.isEmpty() || lowSelling.isEmpty()) {
+        System.out.println("ไม่สามารถสร้างโปรโมชั่นได้ เนื่องจากไม่มีเครื่องดื่มที่เพียงพอ");
+        return;
     }
+    
+    // สร้างโปรโมชั่นใหม่
+    Promotion promotion = new Promotion(topSelling.get(0), lowSelling.get(0), promotionType, preparationType, durationDays);
+    
+    // เพิ่มโปรโมชั่นลงในรายการโปรโมชั่นที่ใช้งานอยู่
+    activePromotions.add(promotion);
+    
+    System.out.println("สร้างโปรโมชั่นใหม่: " + promotionType + " สำหรับระยะเวลา: " + durationDays + " วัน");
+}
+
 }
