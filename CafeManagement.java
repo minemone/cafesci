@@ -406,18 +406,18 @@ public class CafeManagement {
             int quantity = scanner.nextInt();
             scanner.nextLine();
 
-            
-    if (quantity > 0) {
-        // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับจำนวนที่สั่ง
-        cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
-        
-        // อัปเดตยอดขายของเครื่องดื่มตามจำนวนที่สั่ง
-        selectedDrink.incrementSales(quantity);
+            if (quantity > 0) {
+                // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับจำนวนที่สั่ง
+                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
 
-        System.out.println("เพิ่ม " + selectedDrink.getName() + " จำนวน " + quantity + " แก้ว ลงในตะกร้าเรียบร้อยแล้ว.");
-    } else {
-        System.out.println("จำนวนไม่ถูกต้อง กรุณาลองใหม่.");
-    }
+                // อัปเดตยอดขายของเครื่องดื่มตามจำนวนที่สั่ง
+                selectedDrink.incrementSales(quantity);
+
+                System.out.println(
+                        "เพิ่ม " + selectedDrink.getName() + " จำนวน " + quantity + " แก้ว ลงในตะกร้าเรียบร้อยแล้ว.");
+            } else {
+                System.out.println("จำนวนไม่ถูกต้อง กรุณาลองใหม่.");
+            }
 
         } else {
             System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
@@ -727,21 +727,21 @@ public class CafeManagement {
                 for (int i = 0; i < promotions.size(); i++) {
                     Promotion promo = promotions.get(i);
                     if (promo.isPromotionActive()) { // ตรวจสอบว่าโปรโมชั่นยังใช้งานได้อยู่หรือไม่
-                        System.out.println((i + 1) + ". " + promo.getPromotionName() + " (หมดอายุ: " 
-                                           + promo.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ")");
+                        System.out.println((i + 1) + ". " + promo.getPromotionName() + " (หมดอายุ: "
+                                + promo.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ")");
                     }
                 }
                 System.out.print("ต้องการใช้โปรโมชั่นหรือไม่? (yes/no): ");
                 String usePromotion = scanner.nextLine();
-                
+
                 if (usePromotion.equalsIgnoreCase("yes")) {
                     System.out.print("กรุณาเลือกโปรโมชั่น (หมายเลข): ");
                     int promoChoice = scanner.nextInt();
                     scanner.nextLine();
-            
+
                     if (promoChoice > 0 && promoChoice <= promotions.size()) {
                         Promotion selectedPromotion = promotions.get(promoChoice - 1);
-                        
+
                         // เพิ่มส่วนลดให้กับเครื่องดื่มในตะกร้า
                         if (selectedPromotion.getPromotionName().contains("แก้วที่ 2 ลด 50%")) {
                             cart.applyDiscount(selectedDrink, 0.5); // ลด 50% สำหรับแก้วที่ 2
@@ -763,11 +763,12 @@ public class CafeManagement {
             if (quantity > 0) {
                 // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับจำนวนที่สั่ง
                 cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
-                
+
                 // อัปเดตยอดขายของเครื่องดื่มตามจำนวนที่สั่ง
                 selectedDrink.incrementSales(quantity);
-        
-                System.out.println("เพิ่ม " + selectedDrink.getName() + " จำนวน " + quantity + " แก้ว ลงในตะกร้าเรียบร้อยแล้ว.");
+
+                System.out.println(
+                        "เพิ่ม " + selectedDrink.getName() + " จำนวน " + quantity + " แก้ว ลงในตะกร้าเรียบร้อยแล้ว.");
             } else {
                 System.out.println("จำนวนไม่ถูกต้อง กรุณาลองใหม่.");
             }
@@ -801,56 +802,67 @@ public class CafeManagement {
             System.out.println("ตะกร้าของคุณว่างอยู่ กรุณาเพิ่มรายการก่อนทำการชำระเงิน.");
             return;
         }
-    
+
         float totalAmount = cart.getTotalPrice();
-    
+
         System.out.println("เลือกวิธีการชำระเงิน:");
         System.out.println("1. QR Code");
         System.out.println("2. บัตรเครดิต");
         System.out.print("กรุณาเลือกหมายเลข: ");
         int paymentChoice = scanner.nextInt();
         scanner.nextLine(); // จัดการ newline
-    
+
         String paymentMethod = (paymentChoice == 1) ? "QR" : "Credit Card";
-    
+
         List<Drink> drinks = cart.getDrinks();
         List<Integer> quantities = cart.getQuantities();
         List<Topping> toppings = cart.getToppings();
         List<Sweetness> sweetnessLevels = cart.getSweetnessLevels();
         List<PreparationType> preparationTypes = cart.getPreparationTypes();
-    
+
         int orderId = (int) (Math.random() * 1000);
         Order order = new Order(orderId, currentCustomer, totalAmount, drinks, quantities, 0.0);
-    
+
         // ตั้งค่าที่อยู่จัดส่งให้กับ Order
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             order.setDeliveryAddress(deliveryAddress);
         }
-    
+
         paymentSystem = new Payment(totalAmount, paymentMethod, currentCustomer);
         paymentSystem.processPayment(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes);
-    
+
         completedOrders.add(order);
-    
+
         // ล้างตะกร้าและที่อยู่จัดส่งหลังจากสั่งซื้อเสร็จ
         cart.clearCart();
         deliveryAddress = null;
     }
-    
-
 
     private void trackDeliveryStatus() {
-        if (currentCustomer != null && !cart.isEmpty()) {
-            // ตรวจสอบสถานะการจัดส่ง
-            Order order = paymentSystem.getOrder(); // แก้ไขให้สามารถเรียกคำสั่งซื้อปัจจุบันได้
-            if (order != null && order.getStatus().equals("กำลังจัดส่ง")) {
-                System.out.println("สถานะการจัดส่ง: กำลังจัดส่งไปยังที่อยู่ที่คุณระบุ");
-            } else {
-                System.out.println("ยังไม่มีการจัดส่งสำหรับคำสั่งซื้อนี้");
-            }
+        System.out.println("\n== ติดตามสถานะการจัดส่ง ==");
+        List<Order> inProgressOrders = completedOrders.stream()
+                .filter(order -> order.getStatus().equals("รออนุมัติ") ||
+                        order.getStatus().equals("รับคำสั่งซื้อ") ||
+                        order.getStatus().equals("กำลังจัดส่ง"))
+                .collect(Collectors.toList());
+
+        if (inProgressOrders.isEmpty()) {
+            System.out.println("ไม่มีออเดอร์ที่กำลังจัดส่งในขณะนี้.");
         } else {
-            System.out.println("คุณยังไม่มีการจัดส่งที่กำลังดำเนินการ");
+            for (Order order : inProgressOrders) {
+                System.out.println("ออเดอร์ ID: " + order.getOrderId());
+                System.out.println("   ที่อยู่จัดส่ง: " + order.getDeliveryAddress());
+                System.out.println("   สถานะ: " + order.getStatus());
+                System.out.println("-------------------------------");
+            }
         }
+    }
+
+    // เมธอดสำหรับบันทึกสถานะออเดอร์
+    private void saveOrderStatus(Order order) {
+        // โค้ดที่ใช้ในการบันทึกสถานะออเดอร์ลงในระบบ เช่น เขียนลงฐานข้อมูลหรือไฟล์
+        System.out.println(
+                "สถานะของออเดอร์ ID: " + order.getOrderId() + " ถูกบันทึกแล้วเป็น '" + order.getStatus() + "'");
     }
 
     private void trackOrderStatus() {
@@ -864,35 +876,35 @@ public class CafeManagement {
 
     private void setupPromotion() {
         System.out.println("\n=== จัดโปรโมชันเพื่อกระตุ้นยอดขายของเครื่องดื่ม ===");
-    
+
         // จัดเรียงเครื่องดื่มตามยอดขาย
         List<Drink> sortedDrinks = menu.getDrinks().stream()
                 .sorted((d1, d2) -> Integer.compare(d2.getSalesCount(), d1.getSalesCount()))
                 .collect(Collectors.toList());
-    
+
         // แสดงเครื่องดื่มที่ขายได้มากที่สุด 3 อันดับแรก
         System.out.println("\nขายได้มากที่สุด 3 อันดับแรก:");
         for (int i = 0; i < Math.min(3, sortedDrinks.size()); i++) {
             Drink drink = sortedDrinks.get(i);
             System.out.println((i + 1) + ". " + drink.getName() + " (ขายได้ " + drink.getSalesCount() + " แก้ว)");
         }
-    
+
         // แสดงเครื่องดื่มที่ขายได้น้อยที่สุด 3 อันดับแรก
         System.out.println("\nขายได้น้อยที่สุด 3 อันดับแรก:");
         for (int i = sortedDrinks.size() - 1, rank = 4; i >= Math.max(sortedDrinks.size() - 3, 0); i--, rank++) {
             Drink drink = sortedDrinks.get(i);
             System.out.println(rank + ". " + drink.getName() + " (ขายได้ " + drink.getSalesCount() + " แก้ว)");
         }
-    
+
         // ให้ผู้จัดการเลือกเครื่องดื่มยอดขายมากและน้อยสำหรับโปรโมชัน
         System.out.print("เลือกเครื่องดื่มยอดขายมากสุด (ใส่หมายเลข): ");
         int topSellingChoice = scanner.nextInt() - 1;
         System.out.print("เลือกเครื่องดื่มยอดขายน้อยสุด (ใส่หมายเลข): ");
         int lowSellingChoice = scanner.nextInt() - 1;
-    
+
         Drink topSellingDrink = sortedDrinks.get(topSellingChoice);
         Drink lowSellingDrink = sortedDrinks.get(lowSellingChoice);
-    
+
         // เลือกประเภทเครื่องดื่มสำหรับโปรโมชัน
         System.out.println("เลือกประเภทเครื่องดื่มสำหรับโปรโมชัน:");
         System.out.println("1. ร้อน");
@@ -901,25 +913,27 @@ public class CafeManagement {
         System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
         int typeChoice = scanner.nextInt();
         String selectedType = (typeChoice == 1) ? "ร้อน" : (typeChoice == 2) ? "เย็น" : "ปั่น";
-    
+
         // เลือกโปรโมชัน
         System.out.println("\nเลือกโปรโมชัน:");
         System.out.println("1. จับคู่แก้วที่ 2 ลด 50%");
         System.out.println("2. ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3");
         System.out.print("กรุณาเลือกโปรโมชัน: ");
         int promotionTypeChoice = scanner.nextInt();
-        String promotionType = (promotionTypeChoice == 1) ? "จับคู่แก้วที่ 2 ลด 50%" : "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3";
-    
+        String promotionType = (promotionTypeChoice == 1) ? "จับคู่แก้วที่ 2 ลด 50%"
+                : "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3";
+
         // กำหนดระยะเวลาโปรโมชัน
         System.out.print("กรุณาระบุระยะเวลาโปรโมชัน (วัน): ");
         int durationDays = scanner.nextInt();
-    
+
         // // สร้างโปรโมชันใหม่
-        // Promotion promotion = new Promotion(topSellingDrink, lowSellingDrink, promotionType, selectedType, durationDays);
+        // Promotion promotion = new Promotion(topSellingDrink, lowSellingDrink,
+        // promotionType, selectedType, durationDays);
         // promotions.add(promotion);
-        // System.out.println("โปรโมชันถูกสร้างสำเร็จ: " + promotionType + " สำหรับ " + durationDays + " วัน.");
+        // System.out.println("โปรโมชันถูกสร้างสำเร็จ: " + promotionType + " สำหรับ " +
+        // durationDays + " วัน.");
     }
-    
 
     private int getUserInput() {
         while (!scanner.hasNextInt()) {
@@ -930,7 +944,6 @@ public class CafeManagement {
         scanner.nextLine();
         return input;
     }
-
 
     /*
      * ==============================================================
@@ -963,7 +976,7 @@ public class CafeManagement {
                 adjustTableStatus();
                 break;
             case 4:
-            setupPromotion();
+                setupPromotion();
                 break;
             case 5:
                 System.out.println("ออกจากระบบ.");
@@ -973,7 +986,7 @@ public class CafeManagement {
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
-    
+
     public void vReceiptsoradStatus() {
         System.out.println("\nเลือกรายการที่คุณต้องการ:");
         System.out.println("1. ดูใบเสร็จ");
@@ -982,12 +995,12 @@ public class CafeManagement {
         int vaChoice = getUserInput();
         switch (vaChoice) {
             case 1:
-                 viewOrderReceipts();
+                viewOrderReceipts();
                 break;
             case 2:
                 adjustOrderStatus();
                 break;
-           
+
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
                 break;
@@ -1014,7 +1027,8 @@ public class CafeManagement {
         System.out.println("\n=== ปรับสถานะออเดอร์ ===");
         for (int i = 0; i < completedOrders.size(); i++) {
             Order order = completedOrders.get(i);
-            System.out.println((i + 1) + ". ออเดอร์ ID: " + order.getOrderId() + " สถานะปัจจุบัน: " + order.getStatus());
+            System.out
+                    .println((i + 1) + ". ออเดอร์ ID: " + order.getOrderId() + " สถานะปัจจุบัน: " + order.getStatus());
         }
         System.out.print("เลือกหมายเลขออเดอร์ที่ต้องการปรับสถานะ: ");
         int orderChoice = getUserInput();
@@ -1052,9 +1066,6 @@ public class CafeManagement {
         selectedOrder.setStatus(newStatus);
         System.out.println("อัปเดตสถานะออเดอร์เรียบร้อยแล้ว.");
     }
-    
-    
-
 
     // -----------------------------table---------------------->
     // Method สำหรับสร้างโต๊ะตัวอย่าง
@@ -1314,23 +1325,24 @@ public class CafeManagement {
         // ดึงเครื่องดื่มที่ขายดีที่สุดและแย่ที่สุด
         List<Drink> topSelling = manager.getTopSellingDrinks();
         List<Drink> lowSelling = manager.getLowestSellingDrinks();
-    
+
         // สร้างโปรโมชั่นใหม่
-        manager.createPromotion(topSelling, lowSelling, promotionType, null, durationDays); // ใช้ null สำหรับ PreparationType หรือกำหนดค่าเฉพาะ
-    
+        manager.createPromotion(topSelling, lowSelling, promotionType, null, durationDays); // ใช้ null สำหรับ
+                                                                                            // PreparationType
+                                                                                            // หรือกำหนดค่าเฉพาะ
+
         // ดึงโปรโมชั่นที่ active และนำไปใช้ใน Order
         Promotion promotion = manager.getActivePromotions().stream()
                 .filter(p -> p.getPromotionType().equals(promotionType))
                 .findFirst()
                 .orElse(null);
-    
+
         if (promotion != null) {
             order.applyPromotion(promotion);
         } else {
             System.out.println("No active promotion found for the selected type.");
         }
     }
-    
 
     // -----------------------------table---------------------->
 
@@ -1355,7 +1367,7 @@ public class CafeManagement {
                 viewDeliveryOrders();
                 break;
             case 2:
-                
+                trackDeliveryStatus();
                 break;
             case 0:
                 currentRole = null;
@@ -1365,15 +1377,15 @@ public class CafeManagement {
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
-    
+
     private void viewDeliveryOrders() {
         System.out.println("\n== รายการออเดอร์สำหรับจัดส่ง ==");
         List<Order> deliveryOrders = completedOrders.stream()
-            .filter(order -> order.getDeliveryAddress() != null &&
-                             !order.getDeliveryAddress().isEmpty() &&
-                             order.getStatus().equals("เสร็จสิ้น"))
-            .collect(Collectors.toList());
-    
+                .filter(order -> order.getDeliveryAddress() != null &&
+                        !order.getDeliveryAddress().isEmpty() &&
+                        !order.getStatus().equals("จัดส่งแล้ว")) // แสดงออเดอร์ที่ยังไม่ได้จัดส่ง
+                .collect(Collectors.toList());
+
         if (deliveryOrders.isEmpty()) {
             System.out.println("ไม่มีออเดอร์สำหรับจัดส่งในขณะนี้.");
         } else {
@@ -1381,14 +1393,13 @@ public class CafeManagement {
                 Order order = deliveryOrders.get(i);
                 System.out.println((i + 1) + ". ออเดอร์ ID: " + order.getOrderId());
                 System.out.println("   ที่อยู่จัดส่ง: " + order.getDeliveryAddress());
-                System.out.println("   สถานะ: " + order.getStatus());
+                System.out.println("   สถานะ: ");
                 System.out.println("-------------------------------");
             }
-    
-            System.out.print("กรุณาเลือกออเดอร์ที่ต้องการจัดส่ง (ใส่หมายเลข), "
-                             + "หรือ 0 เพื่อกลับ: ");
+
+            System.out.print("กรุณาเลือกออเดอร์ที่ต้องการจัดส่ง (ใส่หมายเลข), หรือ 0 เพื่อกลับ: ");
             int choice = getUserInput();
-    
+
             if (choice > 0 && choice <= deliveryOrders.size()) {
                 Order selectedOrder = deliveryOrders.get(choice - 1);
                 deliverOrder(selectedOrder);
@@ -1399,24 +1410,51 @@ public class CafeManagement {
             }
         }
     }
-    
-    
+
     private void deliverOrder(Order order) {
         System.out.println("คุณได้เลือกจัดส่งออเดอร์ ID: " + order.getOrderId());
-        // ไม่ต้องเปลี่ยนแปลงสถานะของออเดอร์
-    
-        System.out.println("กด 1 เมื่อจัดส่งเสร็จสิ้น, หรือ 0 เพื่อกลับ:");
-        int choice = getUserInput();
-        if (choice == 1) {
-            System.out.println("จัดส่งออเดอร์เรียบร้อยแล้ว.");
-        } else if (choice == 0) {
-            // กลับไปเมนูหลักของไรเดอร์
-        } else {
-            System.out.println("ตัวเลือกไม่ถูกต้อง.");
+        System.out.println("สถานะปัจจุบันของออเดอร์: " + order.getStatus());
+
+        while (true) {
+            System.out.println("เลือกสถานะการจัดส่งใหม่:");
+            System.out.println("1. รออนุมัติ");
+            System.out.println("2. รับคำสั่งซื้อ");
+            System.out.println("3. กำลังจัดส่ง");
+            System.out.println("4. จัดส่งแล้ว");
+            System.out.println("0. ออกจากระบบ");
+
+            int choice = getUserInput();
+
+            switch (choice) {
+                case 1:
+                    order.setStatus("รออนุมัติ");
+                    saveOrderStatus(order);
+                    System.out.println("สถานะออเดอร์ถูกอัปเดตเป็น 'รออนุมัติ'");
+                    break;
+                case 2:
+                    order.setStatus("รับคำสั่งซื้อ");
+                    saveOrderStatus(order);
+                    System.out.println("สถานะออเดอร์ถูกอัปเดตเป็น 'รับคำสั่งซื้อ'");
+                    break;
+                case 3:
+                    order.setStatus("กำลังจัดส่ง");
+                    saveOrderStatus(order);
+                    System.out.println("สถานะออเดอร์ถูกอัปเดตเป็น 'กำลังจัดส่ง'");
+                    break;
+                case 4:
+                    order.setStatus("จัดส่งแล้ว");
+                    saveOrderStatus(order);
+                    System.out.println("สถานะออเดอร์ถูกอัปเดตเป็น 'จัดส่งแล้ว'");
+                    return; // ออกจากเมธอดเมื่อสถานะเป็น 'จัดส่งแล้ว'
+                case 0:
+                    System.out.println("ยกเลิกการเปลี่ยนสถานะและกลับไปเมนูหลักของไรเดอร์");
+                    return; // ออกจากเมธอดเมื่อกดยกเลิก
+                default:
+                    System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+            }
+            System.out.println("สถานะปัจจุบันของออเดอร์: " + order.getStatus());
         }
     }
-    
-    
 
     public static void main(String[] args) {
         CafeManagement cafeManagement = new CafeManagement();
