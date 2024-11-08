@@ -1,12 +1,18 @@
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Manager extends Person {
     private String managerID;
+    private List<Drink> drinks;
+    private List<Promotion> activePromotions;
 
     // Constructor
-    public Manager(String personID, String name, String phoneNumber, Role role, String managerID) {
+    public Manager(String personID, String name, String phoneNumber, Role role, String managerID, List<Drink> drinks) {
         super(personID, name, role); // เรียก Constructor ของ Person และกำหนด Role
         this.managerID = managerID;
+        this.drinks = drinks;
+        this.activePromotions = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -18,73 +24,48 @@ public class Manager extends Person {
         this.managerID = managerID;
     }
 
-    // Method สร้างโปรโมชั่นใหม่
-    public void createPromotion(String promotionDetails) {
-        System.out.println("New promotion created: " + promotionDetails);
+    // Method ดึงเครื่องดื่มยอดขายสูงสุด 3 อันดับแรก
+    public List<Drink> getTopSellingDrinks() {
+        return drinks.stream()
+                     .sorted((d1, d2) -> Integer.compare(d2.getSalesCount(), d1.getSalesCount()))
+                     .limit(3)
+                     .collect(Collectors.toList());
     }
 
-    // Method อัปเดตโปรโมชั่น
-    public void updatePromotion(String promotionID, String newDetails) {
-        System.out.println("Promotion ID " + promotionID + " updated with new details: " + newDetails);
+    // Method ดึงเครื่องดื่มยอดขายน้อยสุด 3 อันดับแรก
+    public List<Drink> getLowestSellingDrinks() {
+        return drinks.stream()
+                     .sorted((d1, d2) -> Integer.compare(d1.getSalesCount(), d2.getSalesCount()))
+                     .limit(3)
+                     .collect(Collectors.toList());
+    }
+
+    // Method สร้างโปรโมชั่นใหม่
+    public void createPromotion(List<Drink> topSelling, List<Drink> lowSelling, String promotionType, int duration) {
+        Promotion promotion = new Promotion(topSelling, lowSelling, promotionType, duration);
+        activePromotions.add(promotion); // เพิ่มโปรโมชั่นใหม่ไปยังรายการโปรโมชั่นที่ใช้งานอยู่
+        System.out.println("New promotion created: " + promotionType + " for duration: " + duration + " days");
+    }
+
+    // Method แสดงโปรโมชั่นที่ใช้งานอยู่ทั้งหมด (ที่ยังไม่หมดอายุ)
+    public List<Promotion> getActivePromotions() {
+        return activePromotions.stream()
+                               .filter(Promotion::isActive) // กรองเฉพาะโปรโมชั่นที่ยังไม่หมดอายุ
+                               .collect(Collectors.toList());
     }
 
     // Method ลบโปรโมชั่น
-    public void deletePromotion(String promotionID) {
-        System.out.println("Promotion ID " + promotionID + " has been deleted.");
-    }
-
-    // Method จัดโต๊ะให้ลูกค้า
-    public void assignTable(int tableNumber, String customerID) {
-        System.out.println("Table number " + tableNumber + " assigned to customer " + customerID);
-    }
-
-    // Method อัปเดตสถานะโต๊ะ
-    public void updateTableStatus(int tableNumber, String status) {
-        System.out.println("Table number " + tableNumber + " status updated to: " + status);
-    }
-
-    // Method ปล่อยโต๊ะ
-    public void releaseTable(int tableNumber) {
-        System.out.println("Table number " + tableNumber + " has been released.");
-    }
-
-    // Method สั่งเครื่องดื่มให้ลูกค้า
-    public void orderDrink(int drinkID, String customerID) {
-        System.out.println("Drink ID " + drinkID + " ordered for customer " + customerID);
-    }
-
-    // Method อัปเดตการสั่งเครื่องดื่ม
-    public void updateDrinkOrder(int orderID, int drinkID, String newDetails) {
-        System.out.println("Order ID " + orderID + " with Drink ID " + drinkID + " updated with details: " + newDetails);
-    }
-
-    // Method ยกเลิกคำสั่งซื้อเครื่องดื่ม
-    public void cancelDrinkOrder(int orderID) {
-        System.out.println("Drink order with Order ID " + orderID + " has been canceled.");
-    }
-
-    // Method สร้างคำสั่งซื้อใหม่
-    public void createOrder(String customerID, List<String> orderDetails) {
-        System.out.println("New order created for customer " + customerID);
-        for (String detail : orderDetails) {
-            System.out.println("Order detail: " + detail);
+    public void deletePromotion(Promotion promotion) {
+        if (activePromotions.remove(promotion)) {
+            System.out.println("Promotion removed: " + promotion.getPromotionType());
+        } else {
+            System.out.println("Promotion not found or already removed.");
         }
     }
 
-    // Method อัปเดตสถานะคำสั่งซื้อ
-    public void updateOrderStatus(int orderID, String newStatus) {
-        System.out.println("Order ID " + orderID + " status updated to: " + newStatus);
-    }
-
-    // Method แสดงสถานะคำสั่งซื้อ
-    public String displayOrderStatus(int orderID) {
-        String status = "Processing"; // ตัวอย่างสถานะ
-        System.out.println("Order ID " + orderID + " status is: " + status);
-        return status;
-    }
-
-    // Method ยกเลิกคำสั่งซื้อ
-    public void cancelOrder(int orderID) {
-        System.out.println("Order ID " + orderID + " has been canceled.");
+    // Method สำหรับตรวจสอบและลบโปรโมชั่นที่หมดอายุ
+    public void cleanExpiredPromotions() {
+        activePromotions.removeIf(promotion -> !promotion.isActive());
+        System.out.println("Expired promotions have been cleaned.");
     }
 }

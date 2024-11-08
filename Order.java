@@ -11,8 +11,10 @@ public class Order {
     private List<Drink> drinks;
     private List<Integer> quantities;
     private String status; // สถานะคำสั่งซื้อ เช่น "รออนุมัติ", "รับคำสั่งซื้อ", "กำลังจัดเตรียม", "เสร็จสิ้น"
-    private String deliveryAddress;
     private LocalDateTime estimatedDeliveryTime;
+    private String deliveryAddress = "";
+    private Promotion promotionApplied; // โปรโมชั่นที่ใช้ในคำสั่งซื้อ (หากมี)
+    
 
     public Order(int orderId, Customer customer, double totalAmount, List<Drink> drinks, List<Integer> quantities,
                  double discount) {
@@ -26,7 +28,6 @@ public class Order {
         
         // กำหนดสถานะเริ่มต้น
         this.status = "รออนุมัติ";
-        this.deliveryAddress = "";
     }
 
     // Getters
@@ -70,6 +71,10 @@ public class Order {
         return deliveryAddress;
     }
 
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
     public LocalDateTime getEstimatedDeliveryTime() {
         return estimatedDeliveryTime;
     }
@@ -77,10 +82,6 @@ public class Order {
     // Setters
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
     }
 
     public void setEstimatedDeliveryTime(LocalDateTime estimatedDeliveryTime) {
@@ -93,6 +94,22 @@ public class Order {
         System.out.println("สถานะคำสั่งซื้อเปลี่ยนเป็น: " + newStatus);
     }
 
+    // ฟังก์ชันใช้โปรโมชั่น
+    public void applyPromotion(Promotion promotion) {
+        if (promotion != null && !promotion.isPromotionExpired()) {
+            this.promotionApplied = promotion;
+            // คำนวณส่วนลดตามประเภทของโปรโมชั่น
+            if (promotion.getSelectPromotion().equals("Buy 2, get 50% off")) {
+                this.discount = totalAmount * 0.5; // ตัวอย่างการคำนวณส่วนลด
+            } else if (promotion.getSelectPromotion().equals("Buy 3, get 30% off")) {
+                this.discount = totalAmount * 0.3;
+            }
+            System.out.println("Promotion applied: " + promotion.getPromotionName());
+        } else {
+            System.out.println("Promotion is either invalid or expired.");
+        }
+    }
+
     // ฟังก์ชันแสดงรายละเอียดคำสั่งซื้อ
     public void displayOrderDetails() {
         System.out.println("=================================");
@@ -100,10 +117,17 @@ public class Order {
         System.out.println("วันและเวลาที่สั่ง: " + orderDateTime);
         System.out.println("ลูกค้า: " + customer.getName());
         System.out.println("สถานะ: " + status);
-        System.out.println("ที่อยู่จัดส่ง: " + (deliveryAddress.isEmpty() ? "ไม่ระบุ" : deliveryAddress));
+        System.out.println("ที่อยู่จัดส่ง: " + (this.deliveryAddress.isEmpty() ? "ไม่ระบุ" : this.deliveryAddress));
         System.out.println("เวลาจัดส่งประมาณ: " + (estimatedDeliveryTime != null ? estimatedDeliveryTime : "ไม่ระบุ"));
         System.out.println("ยอดรวมก่อนหักส่วนลด: ฿" + getOriginalTotalAmount());
-        System.out.println("ส่วนลด: ฿" + discount);
+        
+        if (promotionApplied != null) {
+            System.out.println("โปรโมชั่นที่ใช้: " + promotionApplied.getPromotionName());
+            System.out.println("ส่วนลดจากโปรโมชั่น: ฿" + discount);
+        } else {
+            System.out.println("ส่วนลด: ฿" + discount);
+        }
+        
         System.out.println("ยอดรวมหลังหักส่วนลด: ฿" + getTotalAmount());
         
         System.out.println("\n== รายการเครื่องดื่ม ==");

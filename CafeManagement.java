@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class CafeManagement {
 
@@ -785,15 +786,6 @@ public class CafeManagement {
         cart.clearCart();
     }
 
-    private int getUserInput() {
-        while (!scanner.hasNextInt()) {
-            System.out.print("กรุณาใส่หมายเลขที่ถูกต้อง: ");
-            scanner.next();
-        }
-        int input = scanner.nextInt();
-        scanner.nextLine();
-        return input;
-    }
 
     private void trackDeliveryStatus() {
         if (currentCustomer != null && !cart.isEmpty()) {
@@ -818,70 +810,46 @@ public class CafeManagement {
         }
     }
 
-    // private void setupPromotion() {
-    // System.out.println("\n=== จัดโปรโมชันเพื่อกระตุ้นยอดขายของเครื่องดื่ม ===");
+    private void setupPromotion() {
+        System.out.println("\n=== จัดโปรโมชันเพื่อกระตุ้นยอดขายของเครื่องดื่ม ===");
+        List<Drink> sortedDrinks = menu.getDrinks().stream()
+                .sorted((d1, d2) -> Integer.compare(d2.getSalesCount(), d1.getSalesCount()))
+                .collect(Collectors.toList());
 
-    // System.out.println("\nขายได้มากที่สุด 3 อันดับแรก");
-    // List<Drink> drinks = menu.getDrinks();
-    // for (int i = 0; i < Math.min(3, drinks.size()); i++) {
-    // Drink drink = drinks.get(i);
-    // System.out.println((i + 1) + ". " + drink.getName() + " (ประเภท" +
-    // drink.getPreparationType().getPrepName() + ") (ขายได้ " + drink.getSales() +
-    // " แก้ว)");
-    // }
-
-    // System.out.println("\nขายได้น้อยที่สุด 3 อันดับแรก");
-    // for (int i = drinks.size() - 1, rank = 4; i >= Math.max(drinks.size() - 3,
-    // 0); i--, rank++) {
-    // Drink drink = drinks.get(i);
-    // System.out.println(rank + ". " + drink.getName() + " (ประเภท" +
-    // drink.getPreparationType().getPrepName() + ") (ขายได้ " + drink.getSales() +
-    // " แก้ว)");
-    // }
-
-    // System.out.println("\n0. ย้อนกลับ");
-    // System.out.print("กรุณาเลือกเครื่องดื่มเพื่อจัดโปรโมชันหรือออกจากระบบ: ");
-    // int subChoice = scanner.nextInt();
-
-    // if (subChoice == 0) return;
-    // if (subChoice >= 1 && subChoice <= drinks.size()) {
-    // Drink selectedDrink = drinks.get(subChoice - 1);
-    // setupPromotionDetails(selectedDrink);
-    // } else {
-    // System.out.println("กรุณาเลือกใหม่");
-    // }
-    // }
-
-    private void setupPromotionDetails(Drink selectedDrink) {
-        System.out.println("=== ตั้งค่าโปรโมชัน (" + selectedDrink.getName() + ") ===");
-        System.out.println("1. เฉพาะ " + selectedDrink.getName());
-        System.out.println("2. ทุกเมนู");
-        int promotionChoice = getUserInput();
-        if (promotionChoice == 1) {
-            drinkName = "เฉพาะ " + selectedDrink.getName();
-        } else if (promotionChoice == 2) {
-            drinkName = "ทุกเมนู";
-        } else {
-            System.out.println("กรุณาเลือกใหม่");
+        System.out.println("\nขายได้มากที่สุด 3 อันดับแรก:");
+        for (int i = 0; i < Math.min(3, sortedDrinks.size()); i++) {
+            Drink drink = sortedDrinks.get(i);
+            System.out.println((i + 1) + ". " + drink.getName() + " (ขายได้ " + drink.getSalesCount() + " แก้ว)");
         }
 
-        System.out.println("\nเลือกประเภท:");
-        System.out.println("1. ทุกประเภท");
-        System.out.println("2. ร้อน");
-        System.out.println("3. ปั่น");
-        int typeChoice = getUserInput();
-        drinkType = (typeChoice == 1) ? "ทุกประเภท" : (typeChoice == 2) ? "ร้อน" : "ปั่น";
+        System.out.println("\nขายได้น้อยที่สุด 3 อันดับแรก:");
+        for (int i = sortedDrinks.size() - 1, rank = 4; i >= Math.max(sortedDrinks.size() - 3, 0); i--, rank++) {
+            Drink drink = sortedDrinks.get(i);
+            System.out.println(rank + ". " + drink.getName() + " (ขายได้ " + drink.getSalesCount() + " แก้ว)");
+        }
 
-        System.out.println("\nเลือกโปรโมชัน:");
+        // เพิ่มกระบวนการเลือกโปรโมชัน
+        System.out.println("\nสร้างโปรโมชันใหม่:");
         System.out.println("1. จับคู่แก้วที่ 2 ลด 50%");
         System.out.println("2. ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3");
-        int promoSelect = getUserInput();
-        currentPromotion = (promoSelect == 1) ? "จับคู่แก้วที่ 2 ลด 50%" : "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3";
+        int promotionChoice = getUserInput();
 
-        System.out.print("กำหนดระยะเวลา (วัน): ");
-        durationDays = getUserInput();
-        System.out.println("โปรโมชันถูกตั้งค่าเรียบร้อยแล้ว");
+        String promotionDescription = (promotionChoice == 1) ? "จับคู่แก้วที่ 2 ลด 50%" : "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3";
+        Promotion newPromotion = new Promotion(promotionDescription, LocalDate.now(), LocalDate.now().plusDays(30));
+        promotions.add(newPromotion);
+        System.out.println("โปรโมชันถูกสร้างเรียบร้อยแล้ว: " + promotionDescription);
     }
+
+    private int getUserInput() {
+        while (!scanner.hasNextInt()) {
+            System.out.print("กรุณาใส่หมายเลขที่ถูกต้อง: ");
+            scanner.next();
+        }
+        int input = scanner.nextInt();
+        scanner.nextLine();
+        return input;
+    }
+
 
     /*
      * ==============================================================
@@ -908,13 +876,13 @@ public class CafeManagement {
                 displayOrder();
                 break;
             case 2:
-                adjustTableStatus();
+                vReceiptsoradStatus();
                 break;
             case 3:
-                trackOrderStatus();
+                adjustTableStatus();
                 break;
             case 4:
-
+            setupPromotion();
                 break;
             case 5:
                 System.out.println("ออกจากระบบ.");
@@ -924,174 +892,87 @@ public class CafeManagement {
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
-
-    private void displayOrderMng() {
-        System.out.println("\nเมนูการสั่งเครื่องดื่ม:");
-        System.out.println("1. ดูเมนูน้ำ");
-        System.out.println("2. สั่งรายการเครื่องดื่ม (เลือกน้ำ/ท็อปปิ้ง/ระดับความหวาน/ประเภทเครื่องดื่ม)");
-        System.out.println("3. ดูตะกร้าสินค้าที่สั่ง");
-        System.out.println("4. ชำระเงิน (จ่ายแบบ QR และ บัตรเครดิต)");
-        System.out.println("5. ออกจากระบบ");
+    
+    public void vReceiptsoradStatus() {
+        System.out.println("\nเลือกรายการที่คุณต้องการ:");
+        System.out.println("1. ดูใบเสร็จ");
+        System.out.println("2. ปรับสถานะ");
         System.out.print("กรุณาเลือกหมายเลข: ");
-        int subChoice = getUserInput();
-        switch (subChoice) {
+        int vaChoice = getUserInput();
+        switch (vaChoice) {
             case 1:
-                displayOrderMenu();
+                 viewOrderReceipts();
                 break;
             case 2:
-                addToCartOrder();
+                adjustOrderStatus();
                 break;
-            case 3:
-                viewCart();
-                break;
-            case 4:
-                proceedToPayment();
-                break;
-            case 5:
-                System.out.println("กลับสู่หน้าหลัก");
-                break;
+           
             default:
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+                break;
         }
     }
 
-    private void addToCartOrderMng() {
-        System.out.print("กรุณาเลือกหมายเลขเครื่องดื่มที่ต้องการเพิ่มในตะกร้า: ");
-        if (!scanner.hasNextInt()) {
-            System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-            scanner.next();
+    private void viewOrderReceipts() {
+        if (completedOrders.isEmpty()) {
+            System.out.println("ยังไม่มีออเดอร์เข้ามา.");
             return;
         }
-        int drinkId = scanner.nextInt();
-        scanner.nextLine();
-
-        Drink selectedDrink = menu.getDrink(drinkId);
-        if (selectedDrink != null) {
-            Topping selectedTopping = null;
-            Sweetness selectedSweetness = null;
-            PreparationType selectedPreparationType = null;
-
-            System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
-
-            // เพิ่มท็อปปิ้ง
-            System.out.print("ต้องการเพิ่มท็อปปิ้งหรือไม่? (yes/no): ");
-            String addTopping = scanner.nextLine();
-            if (addTopping.equalsIgnoreCase("yes")) {
-                menu.displayMenutopping();
-                System.out.print("กรุณาเลือกหมายเลขท็อปปิ้ง: ");
-                if (!scanner.hasNextInt()) {
-                    System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                    scanner.next();
-                    return;
-                }
-                int toppingNum = scanner.nextInt();
-                scanner.nextLine();
-                selectedTopping = menu.getTopping(toppingNum);
-                if (selectedTopping != null) {
-                    System.out.println("เพิ่มท็อปปิ้ง " + selectedTopping.getToppingName() + " เรียบร้อยแล้ว.");
-                } else {
-                    System.out.println("ท็อปปิ้งไม่ถูกต้อง.");
-                }
-            }
-
-            // เลือกระดับความหวาน
-
-            menu.displayMenusweetness();
-            System.out.print("กรุณาเลือกหมายเลขระดับความหวาน: ");
-            if (!scanner.hasNextInt()) {
-                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                scanner.next();
-                return;
-            }
-            int sweetnessNum = scanner.nextInt();
-            scanner.nextLine();
-            selectedSweetness = menu.getSweetness(sweetnessNum);
-            if (selectedSweetness != null) {
-                System.out
-                        .println("เลือกระดับความหวาน " + selectedSweetness.getSweetnessName() + " เรียบร้อยแล้ว.");
-            } else {
-                System.out.println("ระดับความหวานไม่ถูกต้อง.");
-            }
-
-            // เลือกประเภทเครื่องดื่ม
-
-            menu.displayPreparationType();
-            System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
-            if (!scanner.hasNextInt()) {
-                System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
-                scanner.next();
-                return;
-            }
-            int preparationTypeNum = scanner.nextInt();
-            scanner.nextLine();
-            selectedPreparationType = menu.getPreparationType(preparationTypeNum);
-            if (selectedPreparationType != null) {
-                System.out.println(
-                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
-            } else {
-                System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
-            }
-
-            // เลือกจำนวนแก้ว
-            System.out.print("กรุณาระบุจำนวนแก้วที่ต้องการ: ");
-            int quantity = scanner.nextInt();
-            scanner.nextLine();
-
-            if (quantity > 0) {
-                // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับท็อปปิ้ง ความหวาน ประเภทเครื่องดื่ม และจำนวน
-                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
-                System.out.println(
-                        "เพิ่ม " + selectedDrink.getName() + " จำนวน " + quantity + " แก้ว ลงในตะกร้าเรียบร้อยแล้ว.");
-            } else {
-                System.out.println("จำนวนไม่ถูกต้อง กรุณาลองใหม่.");
-            }
-
-        } else {
-            System.out.println("หมายเลขเครื่องดื่มไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+        System.out.println("\n=== ใบเสร็จของออเดอร์ทั้งหมด ===");
+        for (Order order : completedOrders) {
+            order.displayOrderDetails(); // ใช้เมธอดนี้จากคลาส Order ที่คุณมีอยู่แล้ว
+            System.out.println("-------------------------------");
         }
-        LocalDateTime pickupTime = choosePickupTime(); // เรียกฟังก์ชันเลือกเวลารับสินค้า
-        System.out.println(
-                "เวลารับสินค้าล่วงหน้า: " + pickupTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        displayPreorder();
     }
 
-    private void displayOrderMenuMng() {
-        System.out.println("เลือกดูเมนูเครื่องดื่มที่คุณต้องการ");
-        System.out.println("1.ทั้งหมด");
-        System.out.println("2.โปรโมชั่น");
-        System.out.println("3.ชา");
-        System.out.println("4.กาแฟ");
-        System.out.println("5.นม");
-        System.out.println("6.ย้อนกลับ");
+    private void adjustOrderStatus() {
+        if (completedOrders.isEmpty()) {
+            System.out.println("ยังไม่มีออเดอร์เข้ามา.");
+            return;
+        }
+        System.out.println("\n=== ปรับสถานะออเดอร์ ===");
+        for (int i = 0; i < completedOrders.size(); i++) {
+            Order order = completedOrders.get(i);
+            System.out.println((i + 1) + ". ออเดอร์ ID: " + order.getOrderId() + " สถานะปัจจุบัน: " + order.getStatus());
+        }
+        System.out.print("เลือกหมายเลขออเดอร์ที่ต้องการปรับสถานะ: ");
+        int orderChoice = getUserInput();
+        if (orderChoice < 1 || orderChoice > completedOrders.size()) {
+            System.out.println("ตัวเลือกไม่ถูกต้อง.");
+            return;
+        }
+        Order selectedOrder = completedOrders.get(orderChoice - 1);
+        System.out.println("สถานะปัจจุบัน: " + selectedOrder.getStatus());
+        System.out.println("เลือกสถานะใหม่:");
+        System.out.println("1. รออนุมัติ");
+        System.out.println("2. รับคำสั่งซื้อ");
+        System.out.println("3. กำลังจัดเตรียม");
+        System.out.println("4. เสร็จสิ้น");
         System.out.print("กรุณาเลือกหมายเลข: ");
-        int Options5choiceCategory = getUserInput();
-        switch (Options5choiceCategory) {
+        int statusChoice = getUserInput();
+        String newStatus = "";
+        switch (statusChoice) {
             case 1:
-                displayDrinksByCategory(allCategory);
-                displayOrder();
+                newStatus = "รออนุมัติ";
                 break;
             case 2:
-                displayDrinksByCategory(promoCategory);
-                displayOrder();
+                newStatus = "รับคำสั่งซื้อ";
                 break;
             case 3:
-                displayDrinksByCategory(teaCategory);
-                displayOrder();
+                newStatus = "กำลังจัดเตรียม";
                 break;
             case 4:
-                displayDrinksByCategory(coffeeCategory);
-                displayOrder();
+                newStatus = "เสร็จสิ้น";
                 break;
-            case 5:
-                displayDrinksByCategory(milkCategory);
-                displayOrder();
-                break;
-            case 6:
-                // displayMainOptions1();
             default:
-                System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
+                System.out.println("ตัวเลือกไม่ถูกต้อง.");
+                return;
         }
+        selectedOrder.setStatus(newStatus);
+        System.out.println("อัปเดตสถานะออเดอร์เรียบร้อยแล้ว.");
     }
+    
+
 
     // -----------------------------table---------------------->
     // Method สำหรับสร้างโต๊ะตัวอย่าง

@@ -6,7 +6,7 @@ public class Drink {
     private Topping topping;
     private PreparationType preparationType;
     private DrinkCategory category;
-    private int sales;
+    private int salesCount; // จำนวนครั้งที่เครื่องดื่มนี้ถูกสั่ง
     private Promotion promotion; // เพิ่ม attribute สำหรับโปรโมชั่น
 
     // Constructor
@@ -17,7 +17,7 @@ public class Drink {
         this.sweetnessLevel = "หวานปกติ";
         this.topping = null;
         this.preparationType = new PreparationType(1, "ร้อน", 0); // ไม่มีประเภทเครื่องดื่มเริ่มต้น
-        this.sales = 0;
+        this.salesCount = 0; // เปลี่ยนจาก `sales` เป็น `salesCount`
         this.category = category;
         this.promotion = null; // เริ่มต้นไม่มีโปรโมชั่น
     }
@@ -40,7 +40,7 @@ public class Drink {
         this.sweetnessLevel = sweetnessLevel;
     }
 
-    public String getSweetness() {
+    public String getSweetnessLevel() {
         return sweetnessLevel;
     }
 
@@ -66,14 +66,12 @@ public class Drink {
         return category;
     }
 
-    public int getSales() {
-        return sales;
-    }
 
     // เพิ่มเมธอดสำหรับอัปเดตยอดขาย
     public void addSales(int quantity) {
-        this.sales += quantity;
+        this.salesCount += quantity;
     }
+
 
     // เพิ่มเมธอดสำหรับกำหนดและดึงโปรโมชั่น
     public void setPromotion(Promotion promotion) {
@@ -82,5 +80,12 @@ public class Drink {
 
     public Promotion getPromotion() {
         return promotion;
+    }
+    public int getSalesCount() {
+        return salesCount;
+    }
+
+    public void incrementSalesCount() {
+        salesCount++;
     }
 }
