@@ -21,6 +21,7 @@ public class CafeManagement {
     private Status currentOrderStatus;
     private double discount = 0.0;
     private Manager manager;
+    private String deliveryAddress;
 
     private DrinkCategory allCategory;
     private DrinkCategory promoCategory;
@@ -238,11 +239,12 @@ public class CafeManagement {
         switch (Options2choice) {
             case 1:
                 System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
-                String deliveryAddress = scanner.nextLine();
+                deliveryAddress = scanner.nextLine(); // เก็บที่อยู่จัดส่ง
                 System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
                 displayOrder();
                 break;
             case 2:
+                deliveryAddress = ""; // ตั้งเป็นค่าว่างหากรับที่ร้าน
                 displayOrder();
                 break;
             case 0:
@@ -799,34 +801,42 @@ public class CafeManagement {
             System.out.println("ตะกร้าของคุณว่างอยู่ กรุณาเพิ่มรายการก่อนทำการชำระเงิน.");
             return;
         }
-
+    
         float totalAmount = cart.getTotalPrice();
-
+    
         System.out.println("เลือกวิธีการชำระเงิน:");
         System.out.println("1. QR Code");
         System.out.println("2. บัตรเครดิต");
         System.out.print("กรุณาเลือกหมายเลข: ");
         int paymentChoice = scanner.nextInt();
         scanner.nextLine(); // จัดการ newline
-
+    
         String paymentMethod = (paymentChoice == 1) ? "QR" : "Credit Card";
-
+    
         List<Drink> drinks = cart.getDrinks();
         List<Integer> quantities = cart.getQuantities();
         List<Topping> toppings = cart.getToppings();
         List<Sweetness> sweetnessLevels = cart.getSweetnessLevels();
         List<PreparationType> preparationTypes = cart.getPreparationTypes();
-
+    
         int orderId = (int) (Math.random() * 1000);
         Order order = new Order(orderId, currentCustomer, totalAmount, drinks, quantities, 0.0);
-
+    
+        // ตั้งค่าที่อยู่จัดส่งให้กับ Order
+        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+            order.setDeliveryAddress(deliveryAddress);
+        }
+    
         paymentSystem = new Payment(totalAmount, paymentMethod, currentCustomer);
         paymentSystem.processPayment(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes);
-
+    
         completedOrders.add(order);
-
+    
+        // ล้างตะกร้าและที่อยู่จัดส่งหลังจากสั่งซื้อเสร็จ
         cart.clearCart();
+        deliveryAddress = null;
     }
+    
 
 
     private void trackDeliveryStatus() {
@@ -904,10 +914,10 @@ public class CafeManagement {
         System.out.print("กรุณาระบุระยะเวลาโปรโมชัน (วัน): ");
         int durationDays = scanner.nextInt();
     
-        // สร้างโปรโมชันใหม่
-        Promotion promotion = new Promotion(topSellingDrink, lowSellingDrink, promotionType, selectedType, durationDays);
-        promotions.add(promotion);
-        System.out.println("โปรโมชันถูกสร้างสำเร็จ: " + promotionType + " สำหรับ " + durationDays + " วัน.");
+        // // สร้างโปรโมชันใหม่
+        // Promotion promotion = new Promotion(topSellingDrink, lowSellingDrink, promotionType, selectedType, durationDays);
+        // promotions.add(promotion);
+        // System.out.println("โปรโมชันถูกสร้างสำเร็จ: " + promotionType + " สำหรับ " + durationDays + " วัน.");
     }
     
 
@@ -1042,6 +1052,7 @@ public class CafeManagement {
         selectedOrder.setStatus(newStatus);
         System.out.println("อัปเดตสถานะออเดอร์เรียบร้อยแล้ว.");
     }
+    
     
 
 
@@ -1341,12 +1352,10 @@ public class CafeManagement {
     private void handleRiderOptions(int choice) {
         switch (choice) {
             case 1:
-                System.out.print("กรุณากรอกสถานที่จัดส่ง: ");
-                String deliveryAddress = scanner.nextLine();
-                System.out.println("คุณได้เลือกจัดส่งไปยัง: " + deliveryAddress);
+                viewDeliveryOrders();
                 break;
             case 2:
-                System.out.println("ติดตามสถานะการจัดส่ง...");
+                
                 break;
             case 0:
                 currentRole = null;
@@ -1356,6 +1365,58 @@ public class CafeManagement {
                 System.out.println("ตัวเลือกไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง.");
         }
     }
+    
+    private void viewDeliveryOrders() {
+        System.out.println("\n== รายการออเดอร์สำหรับจัดส่ง ==");
+        List<Order> deliveryOrders = completedOrders.stream()
+            .filter(order -> order.getDeliveryAddress() != null &&
+                             !order.getDeliveryAddress().isEmpty() &&
+                             order.getStatus().equals("เสร็จสิ้น"))
+            .collect(Collectors.toList());
+    
+        if (deliveryOrders.isEmpty()) {
+            System.out.println("ไม่มีออเดอร์สำหรับจัดส่งในขณะนี้.");
+        } else {
+            for (int i = 0; i < deliveryOrders.size(); i++) {
+                Order order = deliveryOrders.get(i);
+                System.out.println((i + 1) + ". ออเดอร์ ID: " + order.getOrderId());
+                System.out.println("   ที่อยู่จัดส่ง: " + order.getDeliveryAddress());
+                System.out.println("   สถานะ: " + order.getStatus());
+                System.out.println("-------------------------------");
+            }
+    
+            System.out.print("กรุณาเลือกออเดอร์ที่ต้องการจัดส่ง (ใส่หมายเลข), "
+                             + "หรือ 0 เพื่อกลับ: ");
+            int choice = getUserInput();
+    
+            if (choice > 0 && choice <= deliveryOrders.size()) {
+                Order selectedOrder = deliveryOrders.get(choice - 1);
+                deliverOrder(selectedOrder);
+            } else if (choice == 0) {
+                // กลับไปเมนูหลักของไรเดอร์
+            } else {
+                System.out.println("ตัวเลือกไม่ถูกต้อง.");
+            }
+        }
+    }
+    
+    
+    private void deliverOrder(Order order) {
+        System.out.println("คุณได้เลือกจัดส่งออเดอร์ ID: " + order.getOrderId());
+        // ไม่ต้องเปลี่ยนแปลงสถานะของออเดอร์
+    
+        System.out.println("กด 1 เมื่อจัดส่งเสร็จสิ้น, หรือ 0 เพื่อกลับ:");
+        int choice = getUserInput();
+        if (choice == 1) {
+            System.out.println("จัดส่งออเดอร์เรียบร้อยแล้ว.");
+        } else if (choice == 0) {
+            // กลับไปเมนูหลักของไรเดอร์
+        } else {
+            System.out.println("ตัวเลือกไม่ถูกต้อง.");
+        }
+    }
+    
+    
 
     public static void main(String[] args) {
         CafeManagement cafeManagement = new CafeManagement();
