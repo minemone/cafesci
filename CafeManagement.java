@@ -101,9 +101,9 @@ private void simulateSales() {
         menu.addSweetness(new Sweetness(3, "หวานมาก"));
         menu.addSweetness(new Sweetness(4, "อื่นๆ"));
 
-        menu.addPreparationType(new PreparationType(1, "ร้อน", 0));
-        menu.addPreparationType(new PreparationType(2, "เย็น", 5));
-        menu.addPreparationType(new PreparationType(3, "ปั่น", 10));
+        menu.adddrinkType(new DrinkType(1, "ร้อน", 0));
+        menu.adddrinkType(new DrinkType(2, "เย็น", 5));
+        menu.adddrinkType(new DrinkType(3, "ปั่น", 10));
     }
 
     public void start() {
@@ -258,13 +258,13 @@ private void simulateSales() {
         // เลือกท็อปปิ้ง, ความหวาน, และประเภทการเตรียมสำหรับแต่ละเครื่องดื่ม
         Topping topping = getToppingFromUser();
         Sweetness sweetness = getSweetnessFromUser();
-        PreparationType preparationType = getPreparationTypeFromUser();
+        DrinkType DrinkType = getDrinkTypeFromUser();
 
         System.out.print("กรุณาระบุจำนวนสำหรับ " + selectedDrink.getName() + ": ");
         int quantity = scanner.nextInt();
         scanner.nextLine(); // เคลียร์บัฟเฟอร์หลังการกรอกจำนวน
 
-        cart.addItem(selectedDrink, topping, sweetness, preparationType, quantity);
+        cart.addItem(selectedDrink, topping, sweetness, DrinkType, quantity);
     }
 
     // ใช้โปรโมชันและคำนวณส่วนลด
@@ -321,7 +321,7 @@ private void simulateSales() {
     }
 
     // ฟังก์ชันให้ผู้ใช้เลือกประเภทการเตรียมเครื่องดื่ม
-    private PreparationType getPreparationTypeFromUser() {
+    private DrinkType getDrinkTypeFromUser() {
         System.out.println("กรุณาเลือกประเภทการเตรียม:");
         System.out.println("1. ร้อน");
         System.out.println("2. เย็น");
@@ -329,13 +329,13 @@ private void simulateSales() {
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                return new PreparationType(1, "ร้อน", 0);
+                return new DrinkType(1, "ร้อน", 0);
             case 2:
-                return new PreparationType(2, "เย็น", 5);
+                return new DrinkType(2, "เย็น", 5);
             case 3:
-                return new PreparationType(3, "ปั่น", 10);
+                return new DrinkType(3, "ปั่น", 10);
             default:
-                return new PreparationType(1, "ร้อน", 0); // ใช้ค่าเริ่มต้นเป็น "ร้อน" ถ้าผู้ใช้ใส่ค่าผิด
+                return new DrinkType(1, "ร้อน", 0); // ใช้ค่าเริ่มต้นเป็น "ร้อน" ถ้าผู้ใช้ใส่ค่าผิด
         }
     }
 
@@ -507,7 +507,7 @@ private void simulateSales() {
         if (selectedDrink != null) {
             Topping selectedTopping = null;
             Sweetness selectedSweetness = null;
-            PreparationType selectedPreparationType = null;
+            DrinkType selectedDrinkType = null;
 
             System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
 
@@ -553,19 +553,19 @@ private void simulateSales() {
 
             // เลือกประเภทเครื่องดื่ม
 
-            menu.displayPreparationType();
+            menu.displaydrinkType();
             System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
             if (!scanner.hasNextInt()) {
                 System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
                 scanner.next();
                 return;
             }
-            int preparationTypeNum = scanner.nextInt();
+            int DrinkTypeNum = scanner.nextInt();
             scanner.nextLine();
-            selectedPreparationType = menu.getPreparationType(preparationTypeNum);
-            if (selectedPreparationType != null) {
+            selectedDrinkType = menu.getdrinkType(DrinkTypeNum);
+            if (selectedDrinkType != null) {
                 System.out.println(
-                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+                        "เลือกประเภทเครื่องดื่ม " + selectedDrinkType.getdrinktypeName() + " เรียบร้อยแล้ว.");
             } else {
                 System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
             }
@@ -613,7 +613,7 @@ private void simulateSales() {
 
             if (quantity > 0) {
                 // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับจำนวนที่สั่ง
-                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
+                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedDrinkType, quantity);
 
                 // อัปเดตยอดขายของเครื่องดื่มตามจำนวนที่สั่ง
                 selectedDrink.incrementSales(quantity);
@@ -866,7 +866,7 @@ private void simulateSales() {
         if (selectedDrink != null) {
             Topping selectedTopping = null;
             Sweetness selectedSweetness = null;
-            PreparationType selectedPreparationType = null;
+            DrinkType selectedDrinkType = null;
 
             System.out.println("เพิ่มเครื่องดื่ม " + selectedDrink.getName() + " ลงในตะกร้าเรียบร้อยแล้ว.");
 
@@ -912,19 +912,19 @@ private void simulateSales() {
 
             // เลือกประเภทเครื่องดื่ม
 
-            menu.displayPreparationType();
+            menu.displaydrinkType();
             System.out.print("กรุณาเลือกหมายเลขประเภทเครื่องดื่ม: ");
             if (!scanner.hasNextInt()) {
                 System.out.println("กรุณาใส่หมายเลขที่ถูกต้อง.");
                 scanner.next();
                 return;
             }
-            int preparationTypeNum = scanner.nextInt();
+            int DrinkTypeNum = scanner.nextInt();
             scanner.nextLine();
-            selectedPreparationType = menu.getPreparationType(preparationTypeNum);
-            if (selectedPreparationType != null) {
+            selectedDrinkType = menu.getdrinkType(DrinkTypeNum);
+            if (selectedDrinkType != null) {
                 System.out.println(
-                        "เลือกประเภทเครื่องดื่ม " + selectedPreparationType.getPrepName() + " เรียบร้อยแล้ว.");
+                        "เลือกประเภทเครื่องดื่ม " + selectedDrinkType.getdrinktypeName() + " เรียบร้อยแล้ว.");
             } else {
                 System.out.println("ประเภทเครื่องดื่มไม่ถูกต้อง.");
             }
@@ -969,7 +969,7 @@ private void simulateSales() {
 
             if (quantity > 0) {
                 // เพิ่มเครื่องดื่มในตะกร้าพร้อมกับจำนวนที่สั่ง
-                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedPreparationType, quantity);
+                cart.addItem(selectedDrink, selectedTopping, selectedSweetness, selectedDrinkType, quantity);
 
                 // อัปเดตยอดขายของเครื่องดื่มตามจำนวนที่สั่ง
                 selectedDrink.incrementSales(quantity);
@@ -1025,7 +1025,7 @@ private void simulateSales() {
         List<Integer> quantities = cart.getQuantities();
         List<Topping> toppings = cart.getToppings();
         List<Sweetness> sweetnessLevels = cart.getSweetnessLevels();
-        List<PreparationType> preparationTypes = cart.getPreparationTypes();
+        List<DrinkType> DrinkTypes = cart.getdrinkTypes();
 
         int orderId = (int) (Math.random() * 1000);
         Order order = new Order(orderId, currentCustomer, totalAmount, drinks, quantities, 0.0);
@@ -1036,7 +1036,7 @@ private void simulateSales() {
         }
 
         paymentSystem = new Payment(totalAmount, paymentMethod, currentCustomer);
-        paymentSystem.processPayment(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes);
+        paymentSystem.processPayment(order, drinks, quantities, toppings, sweetnessLevels, DrinkTypes);
 
         completedOrders.add(order);
 
@@ -1536,7 +1536,7 @@ private void simulateSales() {
 
         // สร้างโปรโมชั่นใหม่
         manager.createPromotion(topSelling, lowSelling, promotionType, null, durationDays); // ใช้ null สำหรับ
-                                                                                            // PreparationType
+                                                                                            // DrinkType
                                                                                             // หรือกำหนดค่าเฉพาะ
 
         // ดึงโปรโมชั่นที่ active และนำไปใช้ใน Order

@@ -6,7 +6,7 @@ public class Cart {
     private List<Integer> quantities = new ArrayList<>();
     private List<Topping> toppings = new ArrayList<>();
     private List<Sweetness> sweetnessLevels = new ArrayList<>();
-    private List<PreparationType> preparationTypes = new ArrayList<>();
+    private List<DrinkType> drinkTypes = new ArrayList<>();
     private float totalPrice;
 
     // Constructor
@@ -15,16 +15,16 @@ public class Cart {
     }
 
     // เพิ่มเครื่องดื่มในตะกร้า พร้อมการปรับแต่ง
-    public void addItem(Drink selectedDrink, Topping topping, Sweetness sweetness, PreparationType preparationType,
+    public void addItem(Drink selectedDrink, Topping topping, Sweetness sweetness, DrinkType drinkType,
             int quantity) {
         drinks.add(selectedDrink);
         quantities.add(quantity);
         toppings.add(topping);
         sweetnessLevels.add(sweetness);
-        preparationTypes.add(preparationType);
+        drinkTypes.add(drinkType);
 
         // คำนวณราคารวมตามการปรับแต่งแต่ละชนิด
-        double prepPrice = (preparationType != null) ? preparationType.getPrepprice() : 0;
+        double prepPrice = (drinkType != null) ? drinkType.getdrinktypeprice() : 0;
         double itemTotalPrice = (selectedDrink.getPrice() + prepPrice) * quantity;
         totalPrice += itemTotalPrice;
     }
@@ -73,8 +73,8 @@ public class Cart {
     }
 
     // เมธอดเพื่อดึงรายการประเภทเครื่องดื่มทั้งหมดจากตะกร้า
-    public List<PreparationType> getPreparationTypes() {
-        return preparationTypes;
+    public List<DrinkType> getdrinkTypes() {
+        return drinkTypes;
     }
 
     public void applyDiscount(Drink selectedDrink, double discountPercentage) {
@@ -110,18 +110,18 @@ public class Cart {
                 int quantity = quantities.get(i);
                 Topping topping = toppings.get(i);
                 Sweetness sweetness = sweetnessLevels.get(i);
-                PreparationType preparationType = preparationTypes.get(i);
+                DrinkType drinkType = drinkTypes.get(i);
 
                 // แสดงรายละเอียดเครื่องดื่ม พร้อมประเภท ท็อปปิ้ง และความหวาน
                 cartSummary.append(drink.getName())
                         .append(" (จำนวน: ").append(quantity)
                         .append(", ราคา: ")
-                        .append((drink.getPrice() + (preparationType != null ? preparationType.getPrepprice() : 0))
+                        .append((drink.getPrice() + (drinkType != null ? drinkType.getdrinktypeprice() : 0))
                                 * quantity)
                         .append(" บาท");
 
-                if (preparationType != null) {
-                    cartSummary.append(", ประเภท: ").append(preparationType.getPrepName());
+                if (drinkType != null) {
+                    cartSummary.append(", ประเภท: ").append(drinkType.getdrinktypeprice());
                 }
                 if (topping != null) {
                     cartSummary.append(", ท็อปปิ้ง: ").append(topping.getToppingName());
@@ -148,7 +148,7 @@ public class Cart {
         quantities.clear();
         toppings.clear();
         sweetnessLevels.clear();
-        preparationTypes.clear();
+        drinkTypes.clear();
         totalPrice = 0.0f;
         System.out.println("ตะกร้าถูกล้างเรียบร้อยแล้ว.");
     }

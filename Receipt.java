@@ -14,15 +14,15 @@ public class Receipt {
     private List<Integer> quantities;
     private List<Topping> toppings;
     private List<Sweetness> sweetnessLevels;
-    private List<PreparationType> preparationTypes;
+    private List<DrinkType> drinkTypes;
 
 
-    public Receipt(Order order, List<Drink> drinks, List<Integer> quantities, List<Topping> toppings, List<Sweetness> sweetnessLevels, List<PreparationType> preparationTypes, double discount) {
+    public Receipt(Order order, List<Drink> drinks, List<Integer> quantities, List<Topping> toppings, List<Sweetness> sweetnessLevels, List<DrinkType> drinkTypes, double discount) {
         this.drinks = drinks;
         this.quantities = quantities;
         this.toppings = toppings;
         this.sweetnessLevels = sweetnessLevels;
-        this.preparationTypes = preparationTypes;
+        this.drinkTypes = drinkTypes;
         this.discount = discount;
         this.order = order;
         this.receiptID = (int) (Math.random() * 100000);
@@ -39,8 +39,8 @@ public class Receipt {
         for (int i = 0; i < drinks.size(); i++) {
             Drink drink = drinks.get(i);
             int quantity = quantities.get(i);
-            double prepPrice = (preparationTypes.get(i) != null) ? preparationTypes.get(i).getPrepprice() : 0;
-            double itemTotal = (drink.getPrice() + prepPrice) * quantity;
+            double drinkPrice = (drinkTypes.get(i) != null) ? drinkTypes.get(i).getdrinktypeprice() : 0;
+            double itemTotal = (drink.getPrice() + drinkPrice) * quantity;
             calculatedTotal += itemTotal;
         }
         return calculatedTotal;
@@ -65,15 +65,15 @@ public class Receipt {
             int quantity = quantities.get(i);
             Topping topping = toppings.get(i);
             Sweetness sweetness = sweetnessLevels.get(i);
-            PreparationType preparationType = preparationTypes.get(i);
+            DrinkType drinkType = drinkTypes.get(i);
     
-            double prepPrice = (preparationType != null) ? preparationType.getPrepprice() : 0;
-            double totalItemPrice = (drink.getPrice() + prepPrice) * quantity;
+            double drinkPrice = (drinkType != null) ? drinkType.getdrinktypeprice() : 0;
+            double totalItemPrice = (drink.getPrice() + drinkPrice) * quantity;
             recalculatedTotalPrice += totalItemPrice;
     
             String displayName = drink.getName();
-            if (preparationType != null) {
-                displayName += "(" + preparationType.getPrepName() + ")";
+            if (drinkType != null) {
+                displayName += "(" + drinkType.getdrinktypeName() + ")";
             }
             if (topping != null) {
                 displayName += " + " + topping.getToppingName();

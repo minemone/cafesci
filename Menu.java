@@ -8,14 +8,14 @@ public class Menu {
     private List<Drink> drinks;
     private List<Topping> toppings;
     private List<Sweetness> sweetnessLevels;
-    private List<PreparationType> PreparationTypes;
+    private List<DrinkType> drinkTypes;
     private String promotion = "";
     private int promotionDuration = 0;
 
     // Constructor
     public Menu() {
         this.drinks = new ArrayList<>();
-        this.PreparationTypes = new ArrayList<>();
+        this.drinkTypes = new ArrayList<>();
         this.toppings = new ArrayList<>();
         this.sweetnessLevels = new ArrayList<>();
     }
@@ -42,11 +42,11 @@ public class Menu {
         }
     }
 
-    public void displayPreparationType() {
-        System.out.println("\n-- PreparationType  --");
-        for (PreparationType PreparationType : PreparationTypes) {
-            System.out.printf("%d. %s - $%.2f\n", PreparationType.getPrepID(), PreparationType.getPrepName(),
-                    PreparationType.getPrepprice());
+    public void displaydrinkType() {
+        System.out.println("\n-- drinkType  --");
+        for (DrinkType drinkType : drinkTypes) {
+            System.out.printf("%d. %s - $%.2f\n", drinkType.getdrinktypeID(), drinkType.getdrinktypeName(),
+                    drinkType.getdrinktypeprice());
         }
 
         System.out.println("=======================\n");
@@ -82,10 +82,10 @@ public class Menu {
         return null;
     }
 
-    public PreparationType getPreparationType(int PrepID) {
-        for (PreparationType PreparationType : PreparationTypes) {
-            if (PreparationType.getPrepID() == PrepID) {
-                return PreparationType;
+    public DrinkType getdrinkType(int drinkID) {
+        for (DrinkType drinkType : drinkTypes) {
+            if (drinkType.getdrinktypeID() == drinkID) {
+                return drinkType;
             }
         }
         System.out.println("DrinkType not found.");
@@ -104,8 +104,8 @@ public class Menu {
         sweetnessLevels.add(sweetness);
     }
 
-    public void addPreparationType(PreparationType PreparationType) {
-        PreparationTypes.add(PreparationType);
+    public void adddrinkType(DrinkType drinkType) {
+        drinkTypes.add(drinkType);
     }
 
     public List<Drink> getDrinks() {

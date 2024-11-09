@@ -60,7 +60,7 @@ public class Manager extends Person {
 
     // Method to clean expired promotions
     public void createPromotion(List<Drink> topSelling, List<Drink> lowSelling, String promotionType,
-            PreparationType preparationType, int durationDays) {
+            DrinkType preparationType, int durationDays) {
         // ตรวจสอบว่ามีเครื่องดื่มเพียงพอในการสร้างโปรโมชั่น
         if (topSelling.isEmpty() || lowSelling.isEmpty()) {
             System.out.println("ไม่สามารถสร้างโปรโมชั่นได้ เนื่องจากไม่มีเครื่องดื่มที่เพียงพอ");

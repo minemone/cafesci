@@ -4,7 +4,7 @@ public class Drink {
     private float price;
     private String sweetnessLevel;
     private Topping topping;
-    private PreparationType preparationType;
+    private DrinkType preparationType;
     private DrinkCategory category;
     private int salesCount; // จำนวนครั้งที่เครื่องดื่มนี้ถูกสั่ง
     private Promotion promotion; // เพิ่ม attribute สำหรับโปรโมชั่น
@@ -16,7 +16,7 @@ public class Drink {
         this.price = price;
         this.sweetnessLevel = "หวานปกติ";
         this.topping = null;
-        this.preparationType = new PreparationType(1, "ร้อน", 0); // ไม่มีประเภทเครื่องดื่มเริ่มต้น
+        this.preparationType = new DrinkType(1, "ร้อน", 0); // ไม่มีประเภทเครื่องดื่มเริ่มต้น
         this.salesCount = 0; // เปลี่ยนจาก `sales` เป็น `salesCount`
         this.category = category;
         this.promotion = null; // เริ่มต้นไม่มีโปรโมชั่น
@@ -63,11 +63,11 @@ public class Drink {
     }
 
     // Method กำหนดประเภทเครื่องดื่ม
-    public void setPreparationType(PreparationType preparationType) {
+    public void setPreparationType(DrinkType preparationType) {
         this.preparationType = preparationType;
     }
 
-    public PreparationType getPreparationType() {
+    public DrinkType getPreparationType() {
         return preparationType;
     }
 
