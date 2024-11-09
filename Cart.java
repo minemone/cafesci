@@ -15,7 +15,8 @@ public class Cart {
     }
 
     // เพิ่มเครื่องดื่มในตะกร้า พร้อมการปรับแต่ง
-    public void addItem(Drink selectedDrink, Topping topping, Sweetness sweetness, PreparationType preparationType, int quantity) {
+    public void addItem(Drink selectedDrink, Topping topping, Sweetness sweetness, PreparationType preparationType,
+            int quantity) {
         drinks.add(selectedDrink);
         quantities.add(quantity);
         toppings.add(topping);
@@ -29,40 +30,40 @@ public class Cart {
     }
 
     public void applyPromotion(Promotion selectedPromotion) {
-    // ตรวจสอบโปรโมชั่นที่เลือกและปรับราคาให้เหมาะสม
-    if (selectedPromotion != null) {
-        for (int i = 0; i < drinks.size(); i++) {
-            Drink drink = drinks.get(i);
-            int quantity = quantities.get(i);
+        // ตรวจสอบโปรโมชั่นที่เลือกและปรับราคาให้เหมาะสม
+        if (selectedPromotion != null) {
+            for (int i = 0; i < drinks.size(); i++) {
+                Drink drink = drinks.get(i);
+                int quantity = quantities.get(i);
 
-            // หากโปรโมชั่นคือ "จับคู่แก้วที่ 2 ลด 50%"
-            if (selectedPromotion.getPromotionType().equals("จับคู่แก้วที่ 2 ลด 50%")) {
-                if (quantity >= 2) {
-                    // ส่วนลดเฉพาะแก้วที่สอง
-                    double discountForSecondCup = drink.getPrice() * 0.5;
-                    totalPrice -= discountForSecondCup; // ปรับราคาตามส่วนลด
-                    System.out.println("โปรโมชั่น 'จับคู่แก้วที่ 2 ลด 50%' ถูกนำไปใช้กับ " + drink.getName());
-                    break;
+                // หากโปรโมชั่นคือ "จับคู่แก้วที่ 2 ลด 50%"
+                if (selectedPromotion.getPromotionType().equals("จับคู่แก้วที่ 2 ลด 50%")) {
+                    if (quantity >= 2) {
+                        // ส่วนลดเฉพาะแก้วที่สอง
+                        double discountForSecondCup = drink.getPrice() * 0.5;
+                        totalPrice -= discountForSecondCup; // ปรับราคาตามส่วนลด
+                        System.out.println("โปรโมชั่น 'จับคู่แก้วที่ 2 ลด 50%' ถูกนำไปใช้กับ " + drink.getName());
+                        break;
+                    }
                 }
-            }
 
-            // หากโปรโมชั่นคือ "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3"
-            else if (selectedPromotion.getPromotionType().equals("ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3")) {
-                if (quantity >= 3) {
-                    // ส่วนลด 30% สำหรับเครื่องดื่มชิ้นที่ 3
-                    double discountForThirdDrink = drink.getPrice() * 0.3;
-                    totalPrice -= discountForThirdDrink; // ปรับราคาตามส่วนลด
-                    System.out.println("โปรโมชั่น 'ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3' ถูกนำไปใช้กับ " + drink.getName());
-                    break;
+                // หากโปรโมชั่นคือ "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3"
+                else if (selectedPromotion.getPromotionType().equals("ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3")) {
+                    if (quantity >= 3) {
+                        // ส่วนลด 30% สำหรับเครื่องดื่มชิ้นที่ 3
+                        double discountForThirdDrink = drink.getPrice() * 0.3;
+                        totalPrice -= discountForThirdDrink; // ปรับราคาตามส่วนลด
+                        System.out.println("โปรโมชั่น 'ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3' ถูกนำไปใช้กับ "
+                                + drink.getName());
+                        break;
+                    }
                 }
             }
         }
     }
-}
 
-
-     // เมธอดเพื่อดึงรายการท็อปปิ้งทั้งหมดจากตะกร้า
-     public List<Topping> getToppings() {
+    // เมธอดเพื่อดึงรายการท็อปปิ้งทั้งหมดจากตะกร้า
+    public List<Topping> getToppings() {
         return toppings;
     }
 
@@ -80,20 +81,19 @@ public class Cart {
         for (int i = 0; i < drinks.size(); i++) {
             Drink drink = drinks.get(i);
             int quantity = quantities.get(i);
-    
+
             // ตรวจสอบว่าเป็นเครื่องดื่มที่ตรงกับโปรโมชั่น และจำนวนมากกว่า 1 แก้ว
             if (drink.equals(selectedDrink) && quantity >= 2) {
                 // คำนวณส่วนลดเฉพาะแก้วที่สอง
                 double discountForSecondCup = drink.getPrice() * discountPercentage;
-                totalPrice -= discountForSecondCup;  // ปรับลดราคาจากราคารวม
-    
-                System.out.println("โปรโมชั่นถูกนำไปใช้กับ " + selectedDrink.getName() + " ส่วนลด " + (discountPercentage * 100) + "% สำหรับแก้วที่ 2");
-                break;  // ออกจากลูปหลังใช้โปรโมชั่น
+                totalPrice -= discountForSecondCup; // ปรับลดราคาจากราคารวม
+
+                System.out.println("โปรโมชั่นถูกนำไปใช้กับ " + selectedDrink.getName() + " ส่วนลด "
+                        + (discountPercentage * 100) + "% สำหรับแก้วที่ 2");
+                break; // ออกจากลูปหลังใช้โปรโมชั่น
             }
         }
     }
-    
-
 
     // แสดงตะกร้าพร้อมจำนวนสินค้า
     public void displayCart() {
@@ -115,7 +115,9 @@ public class Cart {
                 // แสดงรายละเอียดเครื่องดื่ม พร้อมประเภท ท็อปปิ้ง และความหวาน
                 cartSummary.append(drink.getName())
                         .append(" (จำนวน: ").append(quantity)
-                        .append(", ราคา: ").append((drink.getPrice() + (preparationType != null ? preparationType.getPrepprice() : 0)) * quantity)
+                        .append(", ราคา: ")
+                        .append((drink.getPrice() + (preparationType != null ? preparationType.getPrepprice() : 0))
+                                * quantity)
                         .append(" บาท");
 
                 if (preparationType != null) {
@@ -162,9 +164,9 @@ public class Cart {
     public List<Integer> getQuantities() {
         return quantities;
     }
+
     public List<Drink> getDrinks() {
         return drinks;
     }
 
 }
-

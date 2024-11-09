@@ -35,7 +35,9 @@ public class Cafetable {
             System.out.println(tableName + " ไม่สามารถจองได้.");
             return false; // คืนค่า false ถ้าจองไม่สำเร็จ
         }
-    } public String getMemberID() {
+    }
+
+    public String getMemberID() {
         return memberID;
     }
 

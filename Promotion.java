@@ -13,7 +13,8 @@ public class Promotion {
     private List<Drink> applicableDrinks;
 
     // Constructor for promotions with a duration and applicable drinks
-    public Promotion(Drink topSelling, Drink lowSelling, String promotionType, String preparationType, int durationDays) {
+    public Promotion(Drink topSelling, Drink lowSelling, String promotionType, String preparationType,
+            int durationDays) {
         this.promotionName = "Promotion for " + topSelling.getName() + " and " + lowSelling.getName();
         this.promotionType = promotionType;
         this.preparationType = PreparationType.valueOf(preparationType); // สมมติว่า preparationType เป็น enum
@@ -27,7 +28,7 @@ public class Promotion {
     }
 
     public enum PreparationType {
-        ร้อน(0), เย็น(5), ปั่น(10);  // กำหนดราคาพิเศษที่เพิ่มขึ้นตามประเภท
+        ร้อน(0), เย็น(5), ปั่น(10); // กำหนดราคาพิเศษที่เพิ่มขึ้นตามประเภท
 
         private double prepPrice;
 
@@ -80,10 +81,6 @@ public class Promotion {
     // ส่งคืนรายการเครื่องดื่มที่สามารถใช้โปรโมชันนี้ได้
     public List<Drink> getApplicableDrinks() {
         return applicableDrinks;
-    }
-
-    public PreparationType getPreparationType() {
-        return preparationType;
     }
 
     public LocalDate getEndDate() {

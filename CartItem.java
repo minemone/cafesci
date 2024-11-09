@@ -16,10 +16,4 @@ public class CartItem {
     public double getPrice() {
         return price;
     }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    // ฟังก์ชันอื่น ๆ เช่น getQuantity, setQuantity, ฯลฯ
 }

@@ -20,22 +20,6 @@ public class Menu {
         this.sweetnessLevels = new ArrayList<>();
     }
 
-   public void setPromotion(String promotion, int duration) {
-        this.promotion = promotion;
-        this.promotionDuration = duration;
-    }
-
-    public String getPromotion() {
-        return promotion;
-    }
-
-    public int getPromotionDuration() {
-        return promotionDuration;
-    }
-
-
-    
-
     public void displayMenudrink() {
         System.out.println("\n===== Menu =====\n");
         System.out.println("-- Drinks --");
@@ -67,8 +51,6 @@ public class Menu {
 
         System.out.println("=======================\n");
     }
-
-    
 
     public Drink getDrink(int drinkID) {
         for (Drink drink : drinks) {
@@ -124,26 +106,6 @@ public class Menu {
 
     public void addPreparationType(PreparationType PreparationType) {
         PreparationTypes.add(PreparationType);
-    }
-
-    public void setDrinks(List<Drink> drinks) {
-        this.drinks = drinks;
-        System.out.println("Drinks list set successfully.");
-    }
-
-    public void setToppings(List<Topping> toppings) {
-        this.toppings = toppings;
-        System.out.println("Toppings list set successfully.");
-    }
-
-    public void setSweetnessLevels(List<Sweetness> sweetnessLevels) {
-        this.sweetnessLevels = sweetnessLevels;
-        System.out.println("Sweetness levels list set successfully.");
-    }
-
-    public void setPreparationType(List<PreparationType> PreparationTypes) {
-        this.PreparationTypes = PreparationTypes;
-        System.out.println("PreparationTypes list set successfully.");
     }
 
     public List<Drink> getDrinks() {

@@ -32,7 +32,7 @@ public class Payment {
 
     // ฟังก์ชันสำหรับการชำระเงิน
     public void processPayment(Order order, List<Drink> drinks, List<Integer> quantities, List<Topping> toppings,
-                               List<Sweetness> sweetnessLevels, List<PreparationType> preparationTypes) {
+            List<Sweetness> sweetnessLevels, List<PreparationType> preparationTypes) {
         if (order != null) {
             Scanner scanner = new Scanner(System.in);
 
@@ -61,7 +61,8 @@ public class Payment {
             }
 
             // สร้างและพิมพ์ใบเสร็จ
-            Receipt receipt = new Receipt(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes, discount);
+            Receipt receipt = new Receipt(order, drinks, quantities, toppings, sweetnessLevels, preparationTypes,
+                    discount);
             receipt.printReceipt();
 
             // เพิ่มพอยต์จากยอดการสั่งซื้อ
@@ -92,28 +93,4 @@ public class Payment {
         System.out.println("การชำระเงินผ่านบัตรเครดิตเสร็จสิ้น!");
     }
 
-    // Getters
-    public int getPaymentId() {
-        return paymentId;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public double getDiscount() {
-        return discount;
-    }
 }

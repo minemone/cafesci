@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Customer extends Person {
     private List<Order> orderHistory;
-    private int points; 
+    private int points;
     private Order currentOrder;
     private List<Promotion> availablePromotions;
 
@@ -11,14 +11,15 @@ public class Customer extends Person {
     public Customer(String personID, String name, String email, Role role) {
         super(personID, name, role);
         this.orderHistory = new ArrayList<>();
-        this.points = 0; 
+        this.points = 0;
         this.availablePromotions = new ArrayList<>(); // เริ่มต้นด้วยลิสต์ว่างสำหรับโปรโมชั่นที่ลูกค้าใช้ได้
     }
 
     // ฟังก์ชันสำหรับการสั่งซื้อ
     public void placeOrder(List<Drink> selectedDrinks) {
-        currentOrder = new Order(orderHistory.size() + 1, this, calculateTotal(selectedDrinks), selectedDrinks, getQuantities(selectedDrinks), 0.0);
-        
+        currentOrder = new Order(orderHistory.size() + 1, this, calculateTotal(selectedDrinks), selectedDrinks,
+                getQuantities(selectedDrinks), 0.0);
+
         // แสดงโปรโมชั่นที่มีอยู่ให้ลูกค้าเลือก
         System.out.println("\n== โปรโมชั่นที่ลูกค้าเลือกใช้ได้ ==");
         for (Promotion promotion : availablePromotions) {
@@ -26,10 +27,11 @@ public class Customer extends Person {
                 System.out.println("Available Promotion: " + promotion.getPromotionName());
             }
         }
-        
+
         // ลูกค้าสามารถเลือกใช้โปรโมชั่น (ถ้ามี)
         if (!availablePromotions.isEmpty()) {
-            Promotion selectedPromotion = availablePromotions.get(0); // ตัวอย่างการเลือกโปรโมชั่นที่ 1 (อาจเพิ่มการเลือกจริงในระบบ)
+            Promotion selectedPromotion = availablePromotions.get(0); // ตัวอย่างการเลือกโปรโมชั่นที่ 1
+                                                                      // (อาจเพิ่มการเลือกจริงในระบบ)
             currentOrder.applyPromotion(selectedPromotion);
         }
 
@@ -41,7 +43,7 @@ public class Customer extends Person {
     public void addOrder(Order order) {
         orderHistory.add(order);
         int earnedPoints = (int) (order.getTotalAmount() * 0.10); // ได้พอยต์ 10% ของยอดสั่งซื้อ
-        addPoints(earnedPoints); 
+        addPoints(earnedPoints);
         System.out.printf("ได้รับ %d พอยต์จากการสั่งซื้อนี้\n", earnedPoints);
     }
 

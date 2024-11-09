@@ -12,18 +12,6 @@ public class PreOrder {
         this.pickupTime = pickupTime;
     }
 
-    public int getOrderId() {
-        return orderId;
-    }
-
-    public List<Drink> getDrinks() {
-        return drinks;
-    }
-
-    public LocalDateTime getPickupTime() {
-        return pickupTime;
-    }
-
     public void displayPreOrderDetails() {
         System.out.println("รายละเอียดการสั่งแบบล่วงหน้า:");
         System.out.println("หมายเลขออร์เดอร์: " + orderId);

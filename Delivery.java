@@ -13,10 +13,6 @@ public class Delivery {
         return deliveryId;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public String getStatus() {
         return status;
     }

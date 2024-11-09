@@ -66,12 +66,10 @@ public class Drink {
         return category;
     }
 
-
     // เพิ่มเมธอดสำหรับอัปเดตยอดขาย
     public void addSales(int quantity) {
         this.salesCount += quantity;
     }
-
 
     // เพิ่มเมธอดสำหรับกำหนดและดึงโปรโมชั่น
     public void setPromotion(Promotion promotion) {
@@ -81,6 +79,7 @@ public class Drink {
     public Promotion getPromotion() {
         return promotion;
     }
+
     public int getSalesCount() {
         return salesCount;
     }

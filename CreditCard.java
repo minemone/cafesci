@@ -12,9 +12,7 @@ public class CreditCard {
         this.cvv = cvv;
     }
 
-    // Method to simulate card validation
     public boolean validateCard() {
-        // Simple validation logic for testing purposes
         if (cardNumber.length() == 16 && cvv.length() == 3) {
             return true;
         } else {
