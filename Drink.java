@@ -22,6 +22,15 @@ public class Drink {
         this.promotion = null; // เริ่มต้นไม่มีโปรโมชั่น
     }
 
+    // เมธอดสำหรับตั้งยอดขาย
+    public void setSalesCount(int salesCount) {
+        if (salesCount >= 0) {
+            this.salesCount = salesCount;
+        } else {
+            System.out.println("ยอดขายต้องเป็นจำนวนที่มากกว่าหรือเท่ากับ 0");
+        }
+    }
+
     public int getDrinkID() {
         return drinkID;
     }
