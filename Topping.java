@@ -2,6 +2,7 @@
 public class Topping {
     private int ToppingID;
     private String ToppingName;
+    private double price;
 
     // Constructor
     public Topping(int toppingID, String toppingName) {
@@ -24,6 +25,10 @@ public class Topping {
 
     public void setToppingID(int toppingID) {
         this.ToppingID = toppingID;
+    }
+
+    public double getPrice() {
+        return price;
     }
 
 }

@@ -32,35 +32,35 @@ public class Cart {
     public void applyPromotion(Promotion selectedPromotion) {
         // ตรวจสอบโปรโมชั่นที่เลือกและปรับราคาให้เหมาะสม
         if (selectedPromotion != null) {
-            for (int i = 0; i < drinks.size(); i++) {
-                Drink drink = drinks.get(i);
-                int quantity = quantities.get(i);
-
-                // หากโปรโมชั่นคือ "จับคู่แก้วที่ 2 ลด 50%"
-                if (selectedPromotion.getPromotionType().equals("จับคู่แก้วที่ 2 ลด 50%")) {
-                    if (quantity >= 2) {
-                        // ส่วนลดเฉพาะแก้วที่สอง
-                        double discountForSecondCup = drink.getPrice() * 0.5;
-                        totalPrice -= discountForSecondCup; // ปรับราคาตามส่วนลด
-                        System.out.println("โปรโมชั่น 'จับคู่แก้วที่ 2 ลด 50%' ถูกนำไปใช้กับ " + drink.getName());
-                        break;
-                    }
-                }
-
-                // หากโปรโมชั่นคือ "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3"
-                else if (selectedPromotion.getPromotionType().equals("ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3")) {
-                    if (quantity >= 3) {
-                        // ส่วนลด 30% สำหรับเครื่องดื่มชิ้นที่ 3
-                        double discountForThirdDrink = drink.getPrice() * 0.3;
-                        totalPrice -= discountForThirdDrink; // ปรับราคาตามส่วนลด
-                        System.out.println("โปรโมชั่น 'ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3' ถูกนำไปใช้กับ "
-                                + drink.getName());
-                        break;
-                    }
-                }
+            int totalDrinkCount = 0;
+            
+            // รวมจำนวนเครื่องดื่มทั้งหมดในตะกร้า
+            for (int quantity : quantities) {
+                totalDrinkCount += quantity;
+            }
+    
+            // ตรวจสอบประเภทโปรโมชัน
+            String promoType = selectedPromotion.getPromotionType();
+    
+            // หากโปรโมชั่นคือ "จับคู่แก้วที่ 2 ลด 50%" และจำนวนรวมตรงตามเงื่อนไข
+            if (promoType.equals("จับคู่แก้วที่ 2 ลด 50%") && totalDrinkCount >= 2) {
+                // ลด 50% ของเครื่องดื่มหนึ่งแก้วจากราคาปกติ
+                double discountForSecondCup = drinks.get(0).getPrice() * 0.5;
+                totalPrice -= discountForSecondCup; // ปรับราคาตามส่วนลด
+                System.out.println("โปรโมชั่น 'จับคู่แก้วที่ 2 ลด 50%' ถูกนำไปใช้");
+            }
+            
+            // หากโปรโมชั่นคือ "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3" และจำนวนรวมตรงตามเงื่อนไข
+            else if (promoType.equals("ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3") && totalDrinkCount >= 3) {
+                // ลด 30% ของเครื่องดื่มหนึ่งแก้วจากราคาปกติ
+                double discountForThirdDrink = drinks.get(0).getPrice() * 0.3;
+                totalPrice -= discountForThirdDrink; // ปรับราคาตามส่วนลด
+                System.out.println("โปรโมชั่น 'ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3' ถูกนำไปใช้");
             }
         }
     }
+    
+    
 
     // เมธอดเพื่อดึงรายการท็อปปิ้งทั้งหมดจากตะกร้า
     public List<Topping> getToppings() {

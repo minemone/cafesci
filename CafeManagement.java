@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,18 @@ public class CafeManagement {
         scanner = new Scanner(System.in);
         initializeMenu();
         initializeTables();
+        simulateSales();
     }
+
+
+private void simulateSales() {
+    Random random = new Random();
+    for (Drink drink : menu.getDrinks()) {
+        int simulatedSales = random.nextInt(100); // สุ่มยอดขายระหว่าง 0 ถึง 99
+        drink.incrementSales(simulatedSales); // เพิ่มยอดขายให้กับเครื่องดื่ม
+    }
+}
+
 
     private void initializeMenu() {
 
@@ -178,85 +190,92 @@ public class CafeManagement {
      */
 
     private void customerUsePromotion() {
-        System.out.println("\n=== เลือกโปรโมชันเพื่อใช้ ===");
+    System.out.println("\n=== เลือกโปรโมชันเพื่อใช้ ===");
 
-        // ตรวจสอบว่าโปรโมชันมีอยู่หรือไม่
-        if (promotions.isEmpty()) {
-            System.out.println("ไม่มีโปรโมชันที่สร้างไว้ในระบบ");
-            return;
+    // ตรวจสอบว่าโปรโมชันมีอยู่หรือไม่
+    if (promotions.isEmpty()) {
+        System.out.println("ไม่มีโปรโมชันที่สร้างไว้ในระบบ");
+        return;
+    }
+
+    // แสดงรายการโปรโมชันที่มีในระบบ
+    for (int i = 0; i < promotions.size(); i++) {
+        Promotion promotion = promotions.get(i);
+        System.out.println((i + 1) + ". " + promotion.getPromotionName());
+    }
+
+    // ให้ลูกค้าเลือกโปรโมชัน
+    System.out.print("กรุณาเลือกโปรโมชันที่ต้องการใช้: ");
+    int promotionChoice = scanner.nextInt() - 1;
+
+    // ตรวจสอบการเลือกโปรโมชัน
+    if (promotionChoice < 0 || promotionChoice >= promotions.size()) {
+        System.out.println("โปรโมชันไม่ถูกต้อง");
+        return;
+    }
+
+    Promotion selectedPromotion = promotions.get(promotionChoice);
+
+    // ตรวจสอบว่าโปรโมชันหมดอายุ
+    if (selectedPromotion.isPromotionExpired()) {
+        System.out.println("โปรโมชันนี้หมดอายุแล้ว");
+        return;
+    }
+
+    // แสดงรายละเอียดโปรโมชันที่ลูกค้าเลือก
+    System.out.println("\nโปรโมชันที่คุณเลือก: " + selectedPromotion.getPromotionName());
+    System.out.println("รายละเอียดโปรโมชัน: " + selectedPromotion.getPromotionType());
+    System.out.println("ส่วนลด: " + selectedPromotion.getDiscountPercentage() + "%");
+
+    // ดึงเครื่องดื่มที่ใช้ได้กับโปรโมชัน
+    List<Drink> applicableDrinks = selectedPromotion.getApplicableDrinks();
+    if (applicableDrinks.isEmpty()) {
+        System.out.println("ไม่มีเครื่องดื่มที่ใช้ได้กับโปรโมชันนี้");
+        return;
+    }
+
+    // แสดงเครื่องดื่มที่ร่วมรายการและให้ลูกค้าเลือกหลายรายการ
+    System.out.println("เครื่องดื่มที่ร่วมรายการในโปรโมชันนี้:");
+    for (int i = 0; i < applicableDrinks.size(); i++) {
+        System.out.println((i + 1) + ". " + applicableDrinks.get(i).getName());
+    }
+
+    System.out.print("กรุณาเลือกเครื่องดื่มที่ต้องการใช้ (แยกด้วย ,): ");
+    scanner.nextLine(); // เคลียร์บัฟเฟอร์
+    String[] drinkChoices = scanner.nextLine().split(",");
+
+    // เพิ่มเครื่องดื่มที่เลือกลงในตะกร้า
+    for (String choice : drinkChoices) {
+        int drinkIndex = Integer.parseInt(choice.trim()) - 1;
+
+        if (drinkIndex < 0 || drinkIndex >= applicableDrinks.size()) {
+            System.out.println("การเลือกเครื่องดื่มไม่ถูกต้องสำหรับตัวเลือก: " + choice);
+            continue;
         }
 
-        // แสดงรายการโปรโมชันที่มีในระบบ
-        for (int i = 0; i < promotions.size(); i++) {
-            Promotion promotion = promotions.get(i);
-            System.out.println((i + 1) + ". " + promotion.getPromotionName());
-        }
+        Drink selectedDrink = applicableDrinks.get(drinkIndex);
 
-        // ให้ลูกค้าเลือกโปรโมชัน
-        System.out.print("กรุณาเลือกโปรโมชันที่ต้องการใช้: ");
-        int promotionChoice = scanner.nextInt() - 1;
-
-        // ตรวจสอบการเลือกโปรโมชัน
-        if (promotionChoice < 0 || promotionChoice >= promotions.size()) {
-            System.out.println("โปรโมชันไม่ถูกต้อง");
-            return;
-        }
-
-        Promotion selectedPromotion = promotions.get(promotionChoice);
-
-        // ตรวจสอบว่าโปรโมชันหมดอายุ
-        if (selectedPromotion.isPromotionExpired()) {
-            System.out.println("โปรโมชันนี้หมดอายุแล้ว");
-            return;
-        }
-
-        // แสดงรายละเอียดโปรโมชันที่ลูกค้าเลือก
-        System.out.println("\nโปรโมชันที่คุณเลือก: " + selectedPromotion.getPromotionName());
-        System.out.println("รายละเอียดโปรโมชัน: " + selectedPromotion.getPromotionType());
-        System.out.println("ส่วนลด: " + selectedPromotion.getDiscountPercentage() + "%");
-
-        // ดึงเครื่องดื่มที่ใช้ได้กับโปรโมชัน
-        List<Drink> applicableDrinks = selectedPromotion.getApplicableDrinks();
-        if (applicableDrinks.isEmpty()) {
-            System.out.println("ไม่มีเครื่องดื่มที่ใช้ได้กับโปรโมชันนี้");
-            return;
-        }
-
-        // แสดงเครื่องดื่มที่ร่วมรายการและให้ลูกค้าเลือก
-        System.out.println("เครื่องดื่มที่ร่วมรายการในโปรโมชันนี้:");
-        for (int i = 0; i < applicableDrinks.size(); i++) {
-            System.out.println((i + 1) + ". " + applicableDrinks.get(i).getName());
-        }
-
-        System.out.print("กรุณาเลือกเครื่องดื่มที่ต้องการใช้: ");
-        int drinkChoice = scanner.nextInt() - 1;
-
-        // ตรวจสอบการเลือกเครื่องดื่ม
-        if (drinkChoice < 0 || drinkChoice >= applicableDrinks.size()) {
-            System.out.println("การเลือกเครื่องดื่มไม่ถูกต้อง");
-            return;
-        }
-
-        Drink selectedDrink = applicableDrinks.get(drinkChoice);
-
-        // เลือกท็อปปิ้ง, ความหวาน, และประเภทการเตรียม
+        // เลือกท็อปปิ้ง, ความหวาน, และประเภทการเตรียมสำหรับแต่ละเครื่องดื่ม
         Topping topping = getToppingFromUser();
         Sweetness sweetness = getSweetnessFromUser();
         PreparationType preparationType = getPreparationTypeFromUser();
 
-        // เพิ่มเครื่องดื่มที่เลือกลงในตะกร้า
-        System.out.print("กรุณาระบุจำนวน: ");
+        System.out.print("กรุณาระบุจำนวนสำหรับ " + selectedDrink.getName() + ": ");
         int quantity = scanner.nextInt();
+        scanner.nextLine(); // เคลียร์บัฟเฟอร์หลังการกรอกจำนวน
+
         cart.addItem(selectedDrink, topping, sweetness, preparationType, quantity);
-
-        // ใช้โปรโมชันและคำนวณส่วนลด
-        cart.applyPromotion(selectedPromotion); // คำนวณและใช้โปรโมชันในตะกร้า
-
-        // แสดงรายละเอียดของตะกร้าและราคาหลังส่วนลด
-        System.out.println("\n--- รายละเอียดตะกร้า ---");
-        cart.displayCart();
-        System.out.println("ยอดรวมหลังจากใช้โปรโมชัน: " + cart.getTotalPrice() + " บาท");
     }
+
+    // ใช้โปรโมชันและคำนวณส่วนลด
+    cart.applyPromotion(selectedPromotion);
+
+    // แสดงรายละเอียดของตะกร้าและราคาหลังส่วนลด
+    System.out.println("\n--- รายละเอียดตะกร้า ---");
+    cart.displayCart();
+    System.out.println("ยอดรวมหลังจากใช้โปรโมชัน: " + cart.getTotalPrice() + " บาท");
+}
+
 
     // ฟังก์ชันให้ผู้ใช้เลือกท็อปปิ้งจากรายการที่มี
     private Topping getToppingFromUser() {
@@ -1081,6 +1100,7 @@ public class CafeManagement {
      * ==============================================================
      * 
      */
+    
 
     private void setupPromotion() {
         System.out.println("\n=== จัดโปรโมชันเพื่อกระตุ้นยอดขายของเครื่องดื่ม ===");
