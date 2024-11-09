@@ -28,6 +28,39 @@ public class Cart {
         totalPrice += itemTotalPrice;
     }
 
+    public void applyPromotion(Promotion selectedPromotion) {
+    // ตรวจสอบโปรโมชั่นที่เลือกและปรับราคาให้เหมาะสม
+    if (selectedPromotion != null) {
+        for (int i = 0; i < drinks.size(); i++) {
+            Drink drink = drinks.get(i);
+            int quantity = quantities.get(i);
+
+            // หากโปรโมชั่นคือ "จับคู่แก้วที่ 2 ลด 50%"
+            if (selectedPromotion.getPromotionType().equals("จับคู่แก้วที่ 2 ลด 50%")) {
+                if (quantity >= 2) {
+                    // ส่วนลดเฉพาะแก้วที่สอง
+                    double discountForSecondCup = drink.getPrice() * 0.5;
+                    totalPrice -= discountForSecondCup; // ปรับราคาตามส่วนลด
+                    System.out.println("โปรโมชั่น 'จับคู่แก้วที่ 2 ลด 50%' ถูกนำไปใช้กับ " + drink.getName());
+                    break;
+                }
+            }
+
+            // หากโปรโมชั่นคือ "ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3"
+            else if (selectedPromotion.getPromotionType().equals("ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3")) {
+                if (quantity >= 3) {
+                    // ส่วนลด 30% สำหรับเครื่องดื่มชิ้นที่ 3
+                    double discountForThirdDrink = drink.getPrice() * 0.3;
+                    totalPrice -= discountForThirdDrink; // ปรับราคาตามส่วนลด
+                    System.out.println("โปรโมชั่น 'ลด 30% สำหรับการซื้อเครื่องดื่มชิ้นที่ 3' ถูกนำไปใช้กับ " + drink.getName());
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
      // เมธอดเพื่อดึงรายการท็อปปิ้งทั้งหมดจากตะกร้า
      public List<Topping> getToppings() {
         return toppings;

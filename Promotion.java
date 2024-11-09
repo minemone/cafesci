@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Promotion {
@@ -8,18 +9,41 @@ public class Promotion {
     private PreparationType preparationType;
     private LocalDate startDate;
     private LocalDate endDate;
+    private float discountPercentage;
+    private List<Drink> applicableDrinks;
 
-    // Constructor for promotions with a duration
-    public Promotion(Drink topSelling, Drink lowSelling, String promotionType, PreparationType preparationType,
-            int durationDays) {
+    // Constructor for promotions with a duration and applicable drinks
+    public Promotion(Drink topSelling, Drink lowSelling, String promotionType, String preparationType, int durationDays) {
         this.promotionName = "Promotion for " + topSelling.getName() + " and " + lowSelling.getName();
         this.promotionType = promotionType;
-        this.preparationType = preparationType;
+        this.preparationType = PreparationType.valueOf(preparationType); // สมมติว่า preparationType เป็น enum
         this.startDate = LocalDate.now();
         this.endDate = calculateEndDate(durationDays);
+
+        // กำหนดเครื่องดื่มที่ใช้ได้กับโปรโมชัน
+        this.applicableDrinks = new ArrayList<>();
+        this.applicableDrinks.add(topSelling);
+        this.applicableDrinks.add(lowSelling);
     }
 
-    
+    public enum PreparationType {
+        ร้อน(0), เย็น(5), ปั่น(10);  // กำหนดราคาพิเศษที่เพิ่มขึ้นตามประเภท
+
+        private double prepPrice;
+
+        // Constructor สำหรับเก็บค่าราคาเพิ่ม
+        PreparationType(double prepPrice) {
+            this.prepPrice = prepPrice;
+        }
+
+        public double getPrepPrice() {
+            return prepPrice;
+        }
+
+        public String getPrepName() {
+            return name(); // คืนชื่อของประเภทการเตรียม
+        }
+    }
 
     // Method to calculate the promotion end date
     private LocalDate calculateEndDate(int days) {
@@ -53,6 +77,11 @@ public class Promotion {
         return promotionType;
     }
 
+    // ส่งคืนรายการเครื่องดื่มที่สามารถใช้โปรโมชันนี้ได้
+    public List<Drink> getApplicableDrinks() {
+        return applicableDrinks;
+    }
+
     public PreparationType getPreparationType() {
         return preparationType;
     }
@@ -72,6 +101,8 @@ public class Promotion {
     public boolean isPromotionActive() {
         return !isPromotionExpired(); // ถ้าโปรโมชั่นยังไม่หมดอายุคืนค่า true
     }
-    
 
+    public float getDiscountPercentage() {
+        return discountPercentage; // คืนค่าดังกล่าวเป็นเปอร์เซ็นต์ส่วนลด
+    }
 }

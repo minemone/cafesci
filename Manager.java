@@ -68,13 +68,7 @@ public class Manager extends Person {
         return;
     }
     
-    // สร้างโปรโมชั่นใหม่
-    Promotion promotion = new Promotion(topSelling.get(0), lowSelling.get(0), promotionType, preparationType, durationDays);
-    
-    // เพิ่มโปรโมชั่นลงในรายการโปรโมชั่นที่ใช้งานอยู่
-    activePromotions.add(promotion);
-    
-    System.out.println("สร้างโปรโมชั่นใหม่: " + promotionType + " สำหรับระยะเวลา: " + durationDays + " วัน");
-}
+    // เพิ่มโปรโมชั่นลงในรายการโปรโมชั่นที่ใช้งานอย
 
+}
 }
