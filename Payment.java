@@ -9,6 +9,7 @@ public class Payment {
     private Order order;
     private Customer customer;
     private double discount; // ฟิลด์ส่วนลดสำหรับการบันทึกส่วนลดทั้งหมดที่ใช้
+    
 
     // Constructor
     public Payment(double amount, String method, Customer customer) {
@@ -16,6 +17,7 @@ public class Payment {
         this.amount = amount;
         this.method = method;
         this.customer = customer;
+        
     }
 
     // ฟังก์ชันเพื่อใช้พอยต์เป็นส่วนลด
@@ -46,6 +48,7 @@ public class Payment {
             if (usePoints.equalsIgnoreCase("yes")) {
                 System.out.print("กรุณาระบุจำนวนพอยต์ที่ต้องการใช้: ");
                 double pointsToUse = scanner.nextDouble();
+                scanner.nextLine();
                 discount = applyPointsDiscount(pointsToUse);
             }
 

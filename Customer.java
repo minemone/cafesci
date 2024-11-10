@@ -6,6 +6,7 @@ public class Customer extends Person {
     private int points;
     private Order currentOrder;
     private List<Promotion> availablePromotions;
+    
 
     // Constructor
     public Customer(String personID, String name, String email, Role role) {
@@ -72,10 +73,11 @@ public class Customer extends Person {
     public void reducePoints(double pointsToUse) {
         if (pointsToUse <= this.points) {
             this.points -= pointsToUse;
-            System.out.printf("ใช้ %d พอยต์\n", pointsToUse);
+            System.out.printf("ใช้ %.2f พอยต์\n", pointsToUse);
         } else {
             System.out.println("พอยต์ไม่เพียงพอ");
         }
+        
     }
 
     public int getPoints() {
